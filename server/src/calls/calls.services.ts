@@ -1,6 +1,6 @@
 import twilio from 'twilio';
 import { envConfig } from '../config';
-import { CallLogItem, CallLogsQuery, CallResponse } from './calls.models';
+import { CallLogItem, CallLogsQuery, CallResponse, VoiceOption } from './calls.models';
 
 let client: ReturnType<typeof twilio> | null = null;
 
@@ -17,13 +17,51 @@ const getTwilioClient = () => {
   return client;
 };
 
-export const makeCall = async (to: string, message: string): Promise<CallResponse> => {
+/**
+ * Formats message with SSML for more natural, human-like speech
+ * Adds pauses, emphasis, and prosody for better delivery
+ */
+const formatMessageWithSSML = (message: string): string => {
+  // Escape XML special characters
+  const escaped = message
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+  // Add natural pauses after punctuation and adjust speech rate for conversational tone
+  return `<speak>
+    <prosody rate="95%" pitch="+0%">
+      ${escaped.replace(/\. /g, '.<break time="500ms"/> ')
+               .replace(/! /g, '!<break time="500ms"/> ')
+               .replace(/\? /g, '?<break time="500ms"/> ')
+               .replace(/: /g, ':<break time="300ms"/> ')
+               .replace(/, /g, ',<break time="250ms"/> ')}
+    </prosody>
+  </speak>`;
+};
+
+export const makeCall = async (
+  to: string,
+  message: string,
+  voice: VoiceOption = 'Polly.Joanna-Neural'
+): Promise<CallResponse> => {
   try {
     const twilioClient = getTwilioClient();
+    
+    // Use Amazon Polly Neural voice for most natural, human-like speech
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="${voice}" language="en-US">
+    ${formatMessageWithSSML(message)}
+  </Say>
+</Response>`;
+
     const call = await twilioClient.calls.create({
       to,
       from: envConfig.TWILIO_PHONE_NUMBER,
-      twiml: `<Response><Say voice="alice">${message}</Say></Response>`,
+      twiml,
     });
 
     return {

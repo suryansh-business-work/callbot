@@ -1,6 +1,20 @@
 # Twilio Call Bot
 
-Twilio based phone call system - make outbound calls using Twilio API.
+Twilio based phone call system with **AI-powered natural voices** - make outbound calls using Twilio API with Amazon Polly Neural voices that sound human!
+
+## ✨ Features
+
+- 🎙️ **6 Natural AI Voices** - Amazon Polly Neural voices (US/UK accents, male/female)
+- 🗣️ **Human-like Speech** - SSML-enhanced with natural pauses, prosody, and intonation
+- 📞 **Simple Call Interface** - Easy-to-use form for making calls
+- 📊 **Call Logs** - View call history with pagination, filtering, and search
+- 🎯 **Message Templates** - Example messages for natural-sounding calls
+- 🔒 **Secure** - Environment-based credential management
+
+## 📚 Documentation
+
+- **[TWILIO_SETUP.md](TWILIO_SETUP.md)** - Setup guide for Twilio credentials
+- **[VOICE_GUIDE.md](VOICE_GUIDE.md)** - How to write natural-sounding messages & voice selection tips
 
 ## Project Structure
 

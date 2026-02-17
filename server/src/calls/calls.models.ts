@@ -1,6 +1,15 @@
+export type VoiceOption = 
+  | 'Polly.Joanna-Neural'  // US English female (warm, conversational)
+  | 'Polly.Matthew-Neural' // US English male (clear, professional)
+  | 'Polly.Amy-Neural'     // British English female (clear, articulate)
+  | 'Polly.Brian-Neural'   // British English male (authoritative)
+  | 'Polly.Ruth-Neural'    // US English female (young, friendly)
+  | 'Polly.Stephen-Neural'; // US English male (mature, confident)
+
 export interface MakeCallRequest {
   to: string;
   message?: string;
+  voice?: VoiceOption;
 }
 
 export interface CallResponse {

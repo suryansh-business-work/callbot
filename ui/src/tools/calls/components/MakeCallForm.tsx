@@ -13,6 +13,7 @@ import { makeCall } from '../calls.api';
 import { CallResponse } from '../calls.types';
 import PhoneInputField from './PhoneInputField';
 import MessageInputField from './MessageInputField';
+import VoiceSelectField from './VoiceSelectField';
 import CallResultAlert from './CallResultAlert';
 
 const MakeCallForm = () => {
@@ -29,6 +30,7 @@ const MakeCallForm = () => {
         const response = await makeCall({
           to: values.to,
           message: values.message || undefined,
+          voice: values.voice as any,
         });
         setResult(response);
         if (response.success) {
@@ -50,7 +52,7 @@ const MakeCallForm = () => {
     <Card>
       <CardHeader
         title="Make a Call"
-        subheader="Enter a phone number and message to initiate a call"
+        subheader="Enter a phone number, select a natural AI voice, and customize your message"
         avatar={<PhoneForwardedIcon color="primary" />}
       />
       <CardContent>
@@ -58,6 +60,14 @@ const MakeCallForm = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
             <PhoneInputField
               value={formik.values.to}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              touched={formik.touched}
+              errors={formik.errors}
+              disabled={loading}
+            />
+            <VoiceSelectField
+              value={formik.values.voice}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               touched={formik.touched}

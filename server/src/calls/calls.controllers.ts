@@ -14,8 +14,8 @@ export const initiateCall = async (req: Request, res: Response): Promise<void> =
     return;
   }
 
-  const { to, message } = parsed.data;
-  const result = await callService.makeCall(to, message);
+  const { to, message, voice } = parsed.data;
+  const result = await callService.makeCall(to, message, voice);
 
   if (!result.success) {
     res.status(500).json(result);

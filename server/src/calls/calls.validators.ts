@@ -2,6 +2,15 @@ import { z } from 'zod';
 
 const phoneRegex = /^\+[1-9]\d{1,14}$/;
 
+const voiceOptions = [
+  'Polly.Joanna-Neural',
+  'Polly.Matthew-Neural',
+  'Polly.Amy-Neural',
+  'Polly.Brian-Neural',
+  'Polly.Ruth-Neural',
+  'Polly.Stephen-Neural',
+] as const;
+
 export const makeCallSchema = z.object({
   to: z
     .string({ required_error: 'Phone number is required' })
@@ -12,6 +21,10 @@ export const makeCallSchema = z.object({
     .max(500, 'Message must be under 500 characters')
     .optional()
     .default('Hello! This is a call from Twilio Call Bot.'),
+  voice: z
+    .enum(voiceOptions)
+    .optional()
+    .default('Polly.Joanna-Neural'),
 });
 
 export const callLogsQuerySchema = z.object({

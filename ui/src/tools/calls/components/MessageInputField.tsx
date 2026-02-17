@@ -24,19 +24,19 @@ const MessageInputField = ({
       fullWidth
       id="message"
       name="message"
-      label="Message (TTS)"
-      placeholder="Enter the message to speak on the call"
+      label="Message (Text-to-Speech)"
+      placeholder="Enter a natural, conversational message..."
       value={value}
       onChange={onChange}
       onBlur={onBlur}
       error={touched.message && Boolean(errors.message)}
       helperText={
         (touched.message && errors.message) ||
-        'This message will be spoken during the call using Text-to-Speech'
+        'AI will speak this message naturally with proper pauses and intonation. Use punctuation for natural pauses!'
       }
       disabled={disabled}
       multiline
-      rows={3}
+      rows={4}
     />
   );
 };
