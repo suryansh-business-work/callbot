@@ -4,23 +4,13 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import IconButton from '@mui/material/IconButton';
-import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CallEndIcon from '@mui/icons-material/CallEnd';
-import PersonIcon from '@mui/icons-material/Person';
-import { keyframes } from '@mui/material/styles';
-
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.15); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
-`;
-
-const ring = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
-  70% { box-shadow: 0 0 0 14px rgba(76,175,80,0); }
-  100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
-`;
+import MicOffIcon from '@mui/icons-material/MicOff';
+import MicIcon from '@mui/icons-material/Mic';
+import PauseIcon from '@mui/icons-material/Pause';
+import CallingAnimation from './CallingAnimation';
 
 interface DialerDisplayProps {
   phoneNumber: string;
@@ -37,6 +27,7 @@ const formatDuration = (seconds: number): string => {
 
 const DialerDisplay = ({ phoneNumber, isActive, duration, onHangup }: DialerDisplayProps) => {
   const [elapsed, setElapsed] = useState(duration);
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     if (!isActive) return;
@@ -45,41 +36,81 @@ const DialerDisplay = ({ phoneNumber, isActive, duration, onHangup }: DialerDisp
   }, [isActive]);
 
   return (
-    <Card sx={{ bgcolor: 'secondary.dark', color: '#fff', overflow: 'hidden' }}>
+    <Card
+      role="region"
+      aria-label="Active call"
+      sx={{
+        background: (t) => `linear-gradient(135deg, ${t.palette.grey[900]} 0%, ${t.palette.grey[800]} 100%)`,
+        color: '#fff',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+      }}
+    >
       <CardContent sx={{ p: 1.5, textAlign: 'center', '&:last-child': { pb: 1.5 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
-          <Box sx={{
-            width: 40, height: 40, bgcolor: 'rgba(255,255,255,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: isActive ? `${ring} 1.5s ease-in-out infinite` : undefined,
-          }}>
-            <PersonIcon sx={{ fontSize: 22, opacity: 0.8 }} />
-          </Box>
-          <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace', letterSpacing: 1 }}>
-              {phoneNumber || 'No number'}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Chip
-                label={isActive ? 'Connected' : 'Calling...'}
-                size="small"
-                sx={{
-                  bgcolor: isActive ? 'success.main' : 'warning.main',
-                  color: '#fff', height: 20, fontSize: '0.65rem',
-                  animation: !isActive ? `${pulse} 1.5s ease-in-out infinite` : undefined,
-                }}
-              />
-              <Typography variant="body2" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
-                {formatDuration(elapsed)}
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton
-            onClick={onHangup}
-            sx={{ bgcolor: 'error.main', color: '#fff', width: 40, height: 40, '&:hover': { bgcolor: 'error.dark' } }}
-          >
-            <CallEndIcon sx={{ fontSize: 20 }} />
-          </IconButton>
+        <CallingAnimation
+          status={isActive ? 'connected' : 'ringing'}
+          phoneNumber={phoneNumber}
+          duration={formatDuration(elapsed)}
+        />
+
+        {/* Call controls */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 2,
+            mt: 1.5,
+          }}
+        >
+          <Tooltip title={muted ? 'Unmute' : 'Mute'} arrow>
+            <IconButton
+              onClick={() => setMuted(!muted)}
+              aria-label={muted ? 'Unmute microphone' : 'Mute microphone'}
+              sx={{
+                bgcolor: muted ? 'warning.main' : 'rgba(255,255,255,0.1)',
+                color: '#fff',
+                width: 42,
+                height: 42,
+                transition: 'all 0.2s ease',
+                '&:hover': { bgcolor: muted ? 'warning.dark' : 'rgba(255,255,255,0.2)' },
+              }}
+            >
+              {muted ? <MicOffIcon sx={{ fontSize: 20 }} /> : <MicIcon sx={{ fontSize: 20 }} />}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Hold" arrow>
+            <IconButton
+              aria-label="Hold call"
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.1)',
+                color: '#fff',
+                width: 42,
+                height: 42,
+                transition: 'all 0.2s ease',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+              }}
+            >
+              <PauseIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="End Call" arrow>
+            <IconButton
+              onClick={onHangup}
+              aria-label="End call"
+              sx={{
+                bgcolor: 'error.main',
+                color: '#fff',
+                width: 42,
+                height: 42,
+                transition: 'all 0.2s ease',
+                '&:hover': { bgcolor: 'error.dark', transform: 'scale(1.08)' },
+              }}
+            >
+              <CallEndIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
       </CardContent>
     </Card>
@@ -92,20 +123,30 @@ interface DialerIdleProps {
 
 export const DialerIdle = ({ phoneNumber }: DialerIdleProps) => {
   return (
-    <Card sx={{ bgcolor: 'secondary.main', color: '#fff' }}>
+    <Card
+      role="status"
+      aria-label="Ready to call"
+      sx={{
+        background: (t) => `linear-gradient(135deg, ${t.palette.primary.dark} 0%, ${t.palette.primary.main} 100%)`,
+        color: '#fff',
+        transition: 'all 0.3s ease',
+      }}
+    >
       <CardContent sx={{ p: 1, textAlign: 'center', '&:last-child': { pb: 1 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
           <Box sx={{
-            width: 36, height: 36, bgcolor: 'rgba(255,255,255,0.1)',
+            width: 36, height: 36, borderRadius: '50%',
+            bgcolor: 'rgba(255,255,255,0.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.3s ease',
           }}>
-            <PhoneIcon sx={{ fontSize: 20, opacity: 0.8 }} />
+            <PhoneIcon sx={{ fontSize: 20, opacity: 0.9 }} />
           </Box>
           <Box>
             <Typography variant="body2" sx={{ fontFamily: 'monospace', letterSpacing: 1.5 }}>
               {phoneNumber || 'Enter a number'}
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem' }}>Ready to call</Typography>
+            <Typography variant="caption" sx={{ opacity: 0.7, fontSize: '0.65rem' }}>Ready to call</Typography>
           </Box>
         </Box>
       </CardContent>

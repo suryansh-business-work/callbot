@@ -1,0 +1,11 @@
+node_modules
+server/node_modules
+ui/node_modules
+server/dist
+ui/dist
+*.log
+.git
+.env
+.env.local
+electron/dist
+electron/out

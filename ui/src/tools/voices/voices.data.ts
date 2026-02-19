@@ -1,14 +1,10 @@
 /* ─── Shared voice catalogue — Sarvam.ai Bulbul v3 ──────────────── */
 
-export type VoiceProvider = 'sarvam' | 'openai';
-
 export interface VoiceEntry {
   /** Speaker name sent to Sarvam.ai TTS */
   id: string;
   /** Human-readable name */
   name: string;
-  /** Provider label */
-  provider: VoiceProvider;
   /** Descriptive tags */
   tags: string[];
   /** Primary language labels */
@@ -21,32 +17,13 @@ export interface VoiceEntry {
 
 /* ─── Sarvam.ai Bulbul v3 speakers ───────────────────────────── */
 export const SARVAM_VOICES: VoiceEntry[] = [
-  // Feminine
-  { id: 'meera', name: 'Meera', provider: 'sarvam', gender: 'feminine', tags: ['warm', 'default'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'pavithra', name: 'Pavithra', provider: 'sarvam', gender: 'feminine', tags: ['professional', 'clear'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'maitreyi', name: 'Maitreyi', provider: 'sarvam', gender: 'feminine', tags: ['soft', 'gentle'], languages: ['all'], languageCode: 'hi-IN' },
-
-  // Masculine
-  { id: 'shubh', name: 'Shubh', provider: 'sarvam', gender: 'masculine', tags: ['natural', 'default'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'aditya', name: 'Aditya', provider: 'sarvam', gender: 'masculine', tags: ['deep', 'professional'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'rahul', name: 'Rahul', provider: 'sarvam', gender: 'masculine', tags: ['friendly', 'conversational'], languages: ['all'], languageCode: 'hi-IN' },
-];
-
-/* ─── OpenAI TTS voices ──────────────────────────────────────── */
-export const OPENAI_VOICES: VoiceEntry[] = [
-  { id: 'openai-alloy', name: 'Alloy', provider: 'openai', gender: 'feminine', tags: ['balanced', 'versatile'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-echo', name: 'Echo', provider: 'openai', gender: 'masculine', tags: ['warm', 'deep'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-fable', name: 'Fable', provider: 'openai', gender: 'masculine', tags: ['british', 'expressive'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-onyx', name: 'Onyx', provider: 'openai', gender: 'masculine', tags: ['authoritative', 'deep'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-nova', name: 'Nova', provider: 'openai', gender: 'feminine', tags: ['energetic', 'friendly'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-shimmer', name: 'Shimmer', provider: 'openai', gender: 'feminine', tags: ['soft', 'calm'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-ash', name: 'Ash', provider: 'openai', gender: 'masculine', tags: ['natural', 'clear'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-coral', name: 'Coral', provider: 'openai', gender: 'feminine', tags: ['warm', 'professional'], languages: ['all'], languageCode: 'en-IN' },
-  { id: 'openai-sage', name: 'Sage', provider: 'openai', gender: 'feminine', tags: ['gentle', 'wise'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'shubh', name: 'Shubh', gender: 'masculine', tags: ['natural', 'default'], languages: ['all'], languageCode: 'hi-IN' },
+  { id: 'aditya', name: 'Aditya', gender: 'masculine', tags: ['deep', 'professional'], languages: ['all'], languageCode: 'hi-IN' },
+  { id: 'rahul', name: 'Rahul', gender: 'masculine', tags: ['friendly', 'conversational'], languages: ['all'], languageCode: 'hi-IN' },
 ];
 
 /* ─── All voices combined ──────────────────────────────────────── */
-export const ALL_VOICES: VoiceEntry[] = [...SARVAM_VOICES, ...OPENAI_VOICES];
+export const ALL_VOICES: VoiceEntry[] = [...SARVAM_VOICES];
 
 /* ─── Supported languages (Sarvam.ai Bulbul v3) ──────────────── */
 export interface LanguageEntry {
@@ -70,9 +47,8 @@ export const SUPPORTED_LANGUAGES: LanguageEntry[] = [
 ];
 
 /* ─── Provider metadata ───────────────────────────────────────── */
-export const VOICE_PROVIDERS: { id: VoiceProvider; label: string }[] = [
+export const VOICE_PROVIDERS = [
   { id: 'sarvam', label: 'Sarvam.ai' },
-  { id: 'openai', label: 'OpenAI' },
 ];
 
 /* ─── Helpers ──────────────────────────────────────────────────── */
@@ -81,11 +57,8 @@ export const getVoiceById = (id: string): VoiceEntry | undefined =>
 
 export const getVoiceLabel = (id: string): string => {
   const v = getVoiceById(id);
-  return v ? `${v.name} (${getProviderLabel(v.provider)})` : id;
+  return v ? v.name : id || 'None Selected';
 };
-
-export const getProviderLabel = (provider: VoiceProvider): string =>
-  VOICE_PROVIDERS.find((p) => p.id === provider)?.label ?? provider;
 
 /** Get the language code for a voice (for TwiML language attribute) */
 export const getVoiceLanguageCode = (voiceId: string): string => {

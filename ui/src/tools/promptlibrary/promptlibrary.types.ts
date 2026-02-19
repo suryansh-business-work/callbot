@@ -4,6 +4,7 @@ export interface PromptTemplate {
   name: string;
   description: string;
   systemPrompt: string;
+  firstMessage: string;
   language: string;
   tags: string[];
   createdAt: string;
@@ -26,6 +27,7 @@ export interface CreatePromptPayload {
   name: string;
   description?: string;
   systemPrompt: string;
+  firstMessage?: string;
   language?: string;
   tags?: string[];
 }
@@ -34,6 +36,7 @@ export interface UpdatePromptPayload {
   name?: string;
   description?: string;
   systemPrompt?: string;
+  firstMessage?: string;
   language?: string;
   tags?: string[];
 }

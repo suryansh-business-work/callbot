@@ -55,7 +55,7 @@ const DialPad = ({ value, onChange, disabled }: DialPadProps) => {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%' }} role="group" aria-label="Dial pad">
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
         <CountryCodeSelect
           value={countryCode}
@@ -65,13 +65,15 @@ const DialPad = ({ value, onChange, disabled }: DialPadProps) => {
         <Box sx={{ flex: 1, textAlign: 'center' }}>
           <Typography
             variant="h6"
+            aria-live="polite"
+            aria-label={`Phone number: ${value || 'empty'}`}
             sx={{ fontFamily: 'monospace', letterSpacing: 2, fontSize: { xs: '1rem', sm: '1.2rem' } }}
           >
             {value || countryCode}
           </Typography>
         </Box>
         {localNumber && (
-          <IconButton size="small" onClick={handleBackspace} disabled={disabled} sx={{ color: 'text.secondary' }}>
+          <IconButton size="small" onClick={handleBackspace} disabled={disabled} aria-label="Delete last digit" sx={{ color: 'text.secondary' }}>
             <BackspaceIcon fontSize="small" />
           </IconButton>
         )}
@@ -86,6 +88,7 @@ const DialPad = ({ value, onChange, disabled }: DialPadProps) => {
                 onClick={() => handlePress(key)}
                 disabled={disabled}
                 variant="outlined"
+                aria-label={`Dial ${key}${subLabels[key] ? ` (${subLabels[key]})` : ''}`}
                 sx={{
                   flex: 1,
                   maxWidth: 72,
@@ -96,8 +99,10 @@ const DialPad = ({ value, onChange, disabled }: DialPadProps) => {
                   p: 0.5,
                   color: 'text.primary',
                   borderColor: 'divider',
-                  '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.main' },
-                  '&:active': { bgcolor: 'primary.main', color: '#fff' },
+                  transition: 'all 0.15s ease',
+                  '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.main', transform: 'scale(1.04)' },
+                  '&:active': { bgcolor: 'primary.main', color: '#fff', transform: 'scale(0.96)' },
+                  '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 1 },
                 }}
               >
                 <Typography variant="h6" sx={{ lineHeight: 1, fontWeight: 600 }}>

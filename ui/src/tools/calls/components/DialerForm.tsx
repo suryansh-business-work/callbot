@@ -12,14 +12,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Chip from '@mui/material/Chip';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import MenuItem from '@mui/material/MenuItem';
 import Backdrop from '@mui/material/Backdrop';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CallIcon from '@mui/icons-material/Call';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import DialpadIcon from '@mui/icons-material/Dialpad';
-import EditIcon from '@mui/icons-material/Edit';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { FormikProps } from 'formik';
 import { getVoiceLabel, getVoiceLanguageCode, getVoicesByLanguage } from '../../voices/voices.data';
@@ -32,24 +29,24 @@ import ContactAutocomplete from './ContactAutocomplete';
 import AgentPromptSelect from './AgentPromptSelect';
 import { PromptTemplate } from '../../promptlibrary/promptlibrary.types';
 import { Contact } from '../../contacts/contacts.types';
+import { useModel, AI_MODELS } from '../../../context/ModelContext';
 
 interface DialerFormProps {
   formik: FormikProps<MakeCallFormValues>;
   loading: boolean;
   isCallActive: boolean;
-  inputMode: number;
-  onInputModeChange: (mode: number) => void;
   voiceDialogOpen: boolean;
   onVoiceDialogToggle: (open: boolean) => void;
 }
 
 const DialerForm = ({
-  formik, loading, isCallActive, inputMode, onInputModeChange,
+  formik, loading, isCallActive,
   voiceDialogOpen, onVoiceDialogToggle,
 }: DialerFormProps) => {
   const translatingRef = useRef(false);
   const [translating, setTranslating] = useState(false);
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
+  const { aiModel, setAiModel } = useModel();
 
   const runTranslation = useCallback(async (lang: string) => {
     if (translatingRef.current) return;
@@ -105,6 +102,7 @@ const DialerForm = ({
     if (prompt) {
       setSelectedPromptId(prompt._id);
       formik.setFieldValue('systemPrompt', prompt.systemPrompt);
+      if (prompt.firstMessage) formik.setFieldValue('message', prompt.firstMessage);
     } else {
       setSelectedPromptId(null);
       formik.setFieldValue('systemPrompt', '');
@@ -115,7 +113,7 @@ const DialerForm = ({
   const isCallReady = Boolean(formik.values.to && formik.values.voice && formik.values.language);
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} aria-label="Make a call">
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, position: 'relative' }}>
         {/* Translating overlay */}
         <Backdrop open={translating} sx={{ position: 'absolute', zIndex: 10, bgcolor: 'rgba(255,255,255,0.7)', borderRadius: 1 }}>
@@ -128,24 +126,13 @@ const DialerForm = ({
         {/* Contact search dropdown */}
         <ContactAutocomplete onSelect={handleContactSelect} disabled={disabled} />
 
-        <Tabs value={inputMode} onChange={(_, v) => onInputModeChange(v)} variant="fullWidth"
-          sx={{ minHeight: 32, '& .MuiTab-root': { minHeight: 32, py: 0.3, fontSize: '0.7rem' } }}>
-          <Tab icon={<DialpadIcon sx={{ fontSize: 14 }} />} iconPosition="start" label="Pad" />
-          <Tab icon={<EditIcon sx={{ fontSize: 14 }} />} iconPosition="start" label="Manual" />
-        </Tabs>
-
-        {inputMode === 0 ? (
-          <DialPad value={formik.values.to} onChange={(v) => formik.setFieldValue('to', v)} disabled={disabled} />
-        ) : (
-          <TextField fullWidth size="small" label="Phone" name="to" placeholder="+911234567890"
-            value={formik.values.to} onChange={formik.handleChange} onBlur={formik.handleBlur}
-            error={formik.touched.to && Boolean(formik.errors.to)}
-            helperText={formik.touched.to && formik.errors.to} disabled={disabled} />
-        )}
+        {/* Dial Pad */}
+        <DialPad value={formik.values.to} onChange={(v) => formik.setFieldValue('to', v)} disabled={disabled} />
 
         <Chip icon={<RecordVoiceOverIcon />} label={getVoiceLabel(formik.values.voice)}
           onClick={() => onVoiceDialogToggle(true)} variant="outlined" disabled={disabled}
-          sx={{ width: '100%', justifyContent: 'flex-start', height: 32, fontSize: '0.72rem' }} />
+          aria-label={`Voice: ${getVoiceLabel(formik.values.voice)}. Click to change`}
+          sx={{ width: '100%', justifyContent: 'flex-start', height: 32, fontSize: '0.72rem', transition: 'all 0.2s ease' }} />
 
         <Dialog open={voiceDialogOpen} onClose={() => onVoiceDialogToggle(false)} maxWidth="md" fullWidth>
           <DialogTitle>Select Voice</DialogTitle>
@@ -164,7 +151,7 @@ const DialerForm = ({
           value={formik.values.message} onChange={formik.handleChange}
           multiline rows={2} disabled={disabled} />
 
-        <Box sx={{ border: '1px solid', borderColor: 'divider', p: 0.8 }}>
+        <Box sx={{ border: '1px solid', borderColor: 'divider', p: 0.8, borderRadius: 1, transition: 'all 0.2s ease' }}>
           <FormControlLabel
             control={<Switch checked={formik.values.aiEnabled}
               onChange={(e) => formik.setFieldValue('aiEnabled', e.target.checked)}
@@ -176,6 +163,15 @@ const DialerForm = ({
           />
           <Collapse in={formik.values.aiEnabled}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 0.5 }}>
+              {/* AI Model selector */}
+              <TextField select fullWidth size="small" label="AI Model" value={aiModel}
+                onChange={(e) => setAiModel(e.target.value)} disabled={disabled}>
+                {AI_MODELS.map((m) => (
+                  <MenuItem key={m.id} value={m.id} sx={{ fontSize: '0.75rem' }}>
+                    {m.label} <Chip label={m.tier} size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.6rem' }} />
+                  </MenuItem>
+                ))}
+              </TextField>
               <AgentPromptSelect value={selectedPromptId} onChange={handlePromptSelect} disabled={disabled} />
               <TextField fullWidth size="small" label="Agent Prompt (from library)" name="systemPrompt"
                 value={formik.values.systemPrompt} onChange={formik.handleChange}
@@ -205,7 +201,13 @@ const DialerForm = ({
         <Button type="submit" variant="contained" fullWidth
           disabled={disabled || !isCallReady}
           startIcon={loading ? <CircularProgress size={16} /> : <CallIcon />}
-          sx={{ py: 0.8, fontSize: '0.8rem' }}>
+          aria-label={loading ? 'Calling in progress' : 'Start call'}
+          sx={{
+            py: 0.8, fontSize: '0.8rem',
+            transition: 'all 0.2s ease',
+            '&:not(:disabled):hover': { transform: 'translateY(-1px)', boxShadow: 4 },
+            '&:not(:disabled):active': { transform: 'translateY(0)' },
+          }}>
           {loading ? 'Calling...' : 'Call'}
         </Button>
       </Box>

@@ -12,11 +12,12 @@ const start = async () => {
 
     const httpServer = http.createServer(app);
 
-    // Attach Socket.io to the HTTP server
-    initSocketIO(httpServer);
+    // Attach Socket.io on dedicated WebSocket port
+    initSocketIO(envConfig.WS_PORT);
 
     httpServer.listen(envConfig.PORT, async () => {
       console.log(`Server running on http://localhost:${envConfig.PORT}`);
+      console.log(`WebSocket running on ws://localhost:${envConfig.WS_PORT}`);
       console.log(`Environment: ${envConfig.NODE_ENV}`);
 
       if (envConfig.OPENAI_API_KEY) {

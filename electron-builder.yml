@@ -1,0 +1,57 @@
+appId: com.exyconn.callcenter
+productName: Exyconn Call Center
+copyright: Copyright © 2024 Exyconn
+
+directories:
+  output: dist-electron
+  buildResources: assets
+
+files:
+  - electron/dist/**/*
+  - ui/dist/**/*
+  - package.json
+
+extraMetadata:
+  main: electron/dist/main.js
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: ${productName}-Setup-${version}.${ext}
+  icon: assets/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Exyconn Call Center
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  icon: assets/icon.icns
+  category: public.app-category.business
+
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  icon: assets/icon.png
+  category: Office
+
+publish:
+  provider: generic
+  url: https://releases.exyconn.com

@@ -6,6 +6,7 @@ export interface IPromptTemplate extends Document {
   name: string;
   description: string;
   systemPrompt: string;
+  firstMessage: string;
   language: string;
   tags: string[];
   createdAt: Date;
@@ -18,6 +19,7 @@ const promptTemplateSchema = new Schema<IPromptTemplate>(
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
     systemPrompt: { type: String, required: true },
+    firstMessage: { type: String, default: '' },
     language: { type: String, default: 'en-IN' },
     tags: { type: [String], default: [] },
   },

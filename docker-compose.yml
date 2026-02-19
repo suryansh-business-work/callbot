@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  # ─── MongoDB ──────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    container_name: exyconn-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Server (API + WebSocket) ────────────────────────────────────
+  server:
+    build: ./server
+    container_name: exyconn-server
+    restart: unless-stopped
+    ports:
+      - "9004:9004"
+      - "9005:9005"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=9004
+      - WS_PORT=9005
+      - CLIENT_URL=http://localhost:9003
+      - MONGODB_URI=mongodb://mongo:27017/exyconn
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # ─── UI (Nginx) ──────────────────────────────────────────────────
+  ui:
+    build:
+      context: ./ui
+      args:
+        VITE_WS_URL: http://localhost:9005
+    container_name: exyconn-ui
+    restart: unless-stopped
+    ports:
+      - "9003:80"
+    depends_on:
+      - server
+
+volumes:
+  mongo_data:
+    driver: local

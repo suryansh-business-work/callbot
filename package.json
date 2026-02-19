@@ -1,0 +1,23 @@
+{
+  "name": "exyconn-call-center",
+  "version": "1.0.0",
+  "description": "Exyconn AI-Powered Call Center - Desktop App",
+  "private": true,
+  "main": "electron/dist/main.js",
+  "scripts": {
+    "electron:dev": "concurrently \"cd ui && npm run dev\" \"cd server && npm run dev\" \"wait-on http://localhost:9003 && electron .\"",
+    "electron:build": "cd ui && npm run build && cd .. && tsc -p electron/tsconfig.json && electron-builder",
+    "electron:preview": "tsc -p electron/tsconfig.json && electron .",
+    "postinstall": "cd ui && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^31.4.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.4",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "extends": "./electron-builder.yml"
+  }
+}

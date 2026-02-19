@@ -394,18 +394,49 @@ setInterval(() => {
 
 // ─── Translation ────────────────────────────────────────────────────────────
 
-export const translateText = async (text: string, targetLanguage: string, model?: string): Promise<string> => {
+export const translateText = async (text: string, targetLanguage: string): Promise<string> => {
+  const apiKey = envConfig.SARVAM_API_KEY;
+
+  // Try Sarvam.ai translate first (fast, supports Indian languages)
+  if (apiKey) {
+    try {
+      const sourceLanguage = targetLanguage.startsWith('en') ? 'hi-IN' : 'en-IN';
+
+      const response = await fetch('https://api.sarvam.ai/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-subscription-key': apiKey,
+        },
+        body: JSON.stringify({
+          input: text.slice(0, 5000),
+          source_language_code: sourceLanguage,
+          target_language_code: targetLanguage,
+          model: 'mayura:v1',
+          enable_preprocessing: true,
+        }),
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as { translated_text: string };
+        if (data.translated_text) return data.translated_text;
+      } else {
+        const errBody = await response.text();
+        console.warn('[Sarvam Translate] API error:', response.status, errBody);
+      }
+    } catch (err) {
+      console.warn('[Sarvam Translate] Failed, falling back to OpenAI:', err);
+    }
+  }
+
+  // Fallback to OpenAI translation
   const openai = getOpenAI();
   const langName = getLanguageName(targetLanguage);
-  const chatModel = model || 'gpt-4o-mini';
 
   const completion = await openai.chat.completions.create({
-    model: chatModel,
+    model: 'gpt-4o-mini',
     messages: [
-      {
-        role: 'system',
-        content: `You are a translator. Translate the following text to ${langName}. Return ONLY the translated text, nothing else. Preserve formatting and meaning.`,
-      },
+      { role: 'system', content: `Translate to ${langName}. Return ONLY the translated text, nothing else.` },
       { role: 'user', content: text },
     ],
     max_tokens: 1000,

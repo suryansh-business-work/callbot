@@ -9,7 +9,7 @@ interface VoiceContextValue {
 }
 
 const VoiceContext = createContext<VoiceContextValue>({
-  voice: 'meera',
+  voice: 'shubh',
   language: 'en-IN',
   setVoice: () => {},
   setLanguage: () => {},
@@ -22,7 +22,7 @@ interface VoiceProviderProps {
 }
 
 export const VoiceProvider = ({ children }: VoiceProviderProps) => {
-  const [voice, setVoiceState] = useState('meera');
+  const [voice, setVoiceState] = useState('shubh');
   const [language, setLanguage] = useState('en-IN');
 
   const setVoice = useCallback((voiceId: string) => {

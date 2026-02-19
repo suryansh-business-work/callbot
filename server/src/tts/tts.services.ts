@@ -204,8 +204,13 @@ export const generateOpenAiPreview = async (
   text: string = 'Hello, how can I help you today?',
   signal?: AbortSignal
 ): Promise<string> => {
-  // Strip 'openai-' prefix to get the actual voice name
   const voice = voiceId.replace('openai-', '') as 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer' | 'ash' | 'coral' | 'sage';
+
+  // Early abort check
+  if (signal?.aborted) {
+    const err = Object.assign(new Error('Aborted'), { name: 'AbortError' });
+    throw err;
+  }
 
   const cacheKey = getPreviewCacheKey(voice, text, 'openai');
   const cached = previewCache.get(cacheKey);
@@ -216,19 +221,29 @@ export const generateOpenAiPreview = async (
   if (!envConfig.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is not configured');
 
   const openai = new OpenAI({ apiKey: envConfig.OPENAI_API_KEY });
-  const mp3 = await openai.audio.speech.create({
-    model: 'tts-1',
-    voice,
-    input: text.slice(0, 500),
-  });
 
-  if (signal?.aborted) throw new Error('AbortError');
+  try {
+    const mp3 = await openai.audio.speech.create(
+      { model: 'tts-1', voice, input: text.slice(0, 500) },
+      signal ? { signal } : undefined
+    );
 
-  const buffer = Buffer.from(await mp3.arrayBuffer());
-  const base64 = buffer.toString('base64');
+    if (signal?.aborted) {
+      throw Object.assign(new Error('Aborted'), { name: 'AbortError' });
+    }
 
-  previewCache.set(cacheKey, { audio: base64, createdAt: Date.now() });
-  return base64;
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    const base64 = buffer.toString('base64');
+
+    previewCache.set(cacheKey, { audio: base64, createdAt: Date.now() });
+    return base64;
+  } catch (err: unknown) {
+    // If request was aborted during the API call, normalize the error
+    if (signal?.aborted) {
+      throw Object.assign(new Error('Aborted'), { name: 'AbortError' });
+    }
+    throw err;
+  }
 };
 
 // ─── Periodic cleanup ───────────────────────────────────────────────────────

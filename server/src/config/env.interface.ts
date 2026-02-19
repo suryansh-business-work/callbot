@@ -11,6 +11,9 @@ export interface EnvConfig {
   /** Server port */
   PORT: number;
 
+  /** WebSocket port */
+  WS_PORT: number;
+
   /** Node environment */
   NODE_ENV: 'development' | 'production' | 'test';
 

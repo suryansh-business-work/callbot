@@ -68,7 +68,13 @@ export const previewVoice = async (req: Request, res: Response): Promise<void> =
     res.json({ audio: base64Audio, contentType });
   } catch (err: unknown) {
     // AbortError means the client closed the connection — not a real error.
-    if (err instanceof Error && err.name === 'AbortError') return;
+    const isAbort = err instanceof Error && (
+      err.name === 'AbortError' ||
+      err.message === 'AbortError' ||
+      err.message === 'Aborted' ||
+      err.message?.includes('abort')
+    );
+    if (isAbort) return;
     if (!res.destroyed && !res.headersSent) {
       console.error('[TTS Preview] Error:', err);
       res.status(500).json({ error: 'Failed to generate voice preview' });

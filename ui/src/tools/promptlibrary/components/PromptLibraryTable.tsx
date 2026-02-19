@@ -75,6 +75,7 @@ const PromptLibraryTable = ({ onEdit, refreshKey }: PromptLibraryTableProps) => 
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Description</TableCell>
+              <TableCell>First Message</TableCell>
               <TableCell>Language</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -82,13 +83,13 @@ const PromptLibraryTable = ({ onEdit, refreshKey }: PromptLibraryTableProps) => 
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                   <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
             ) : data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                   <Typography variant="body2" color="text.secondary">No prompts found</Typography>
                 </TableCell>
               </TableRow>
@@ -109,6 +110,11 @@ const PromptLibraryTable = ({ onEdit, refreshKey }: PromptLibraryTableProps) => 
                         {item.description || item.systemPrompt.slice(0, 80) + '...'}
                       </Typography>
                     </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                      {item.firstMessage || '-'}
+                    </Typography>
                   </TableCell>
                   <TableCell>{item.language}</TableCell>
                   <TableCell align="right">

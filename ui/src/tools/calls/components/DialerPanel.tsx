@@ -35,12 +35,11 @@ interface DialerPanelProps {
 const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCallStarted, onCallEnded, historySelection }: DialerPanelProps) => {
   const [loading, setLoading] = useState(false);
   const [voiceDialogOpen, setVoiceDialogOpen] = useState(false);
-  const [inputMode, setInputMode] = useState<number>(0);
-  const { voice: globalVoice, language: globalLanguage } = useVoice();
+  const { language: globalLanguage } = useVoice();
   const { aiModel } = useModel();
 
   const formik = useFormik<MakeCallFormValues>({
-    initialValues: { ...makeCallInitialValues, voice: globalVoice, language: globalLanguage },
+    initialValues: { ...makeCallInitialValues, language: globalLanguage },
     validationSchema: makeCallValidationSchema,
     onSubmit: async (values) => {
       setLoading(true);
@@ -94,7 +93,6 @@ const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCall
         if (res.success && res.data) {
           formik.setFieldValue('aiEnabled', true);
           formik.setFieldValue('systemPrompt', res.data.systemPrompt);
-          formik.setFieldValue('voice', res.data.voice);
           formik.setFieldValue('message', res.data.greeting);
         }
       } catch { /* ignore */ }
@@ -112,7 +110,6 @@ const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCall
     formik.setFieldValue('aiEnabled', historySelection.aiEnabled);
     if (historySelection.systemPrompt) formik.setFieldValue('systemPrompt', historySelection.systemPrompt);
     if (historySelection.message) formik.setFieldValue('message', historySelection.message);
-    setInputMode(1); // switch to manual mode to show phone
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historySelection]);
 
@@ -130,8 +127,6 @@ const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCall
             formik={formik}
             loading={loading}
             isCallActive={isCallActive}
-            inputMode={inputMode}
-            onInputModeChange={setInputMode}
             voiceDialogOpen={voiceDialogOpen}
             onVoiceDialogToggle={setVoiceDialogOpen}
           />

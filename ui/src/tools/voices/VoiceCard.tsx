@@ -10,7 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import axios from 'axios';
-import { VoiceEntry, getProviderLabel } from './voices.data';
+import { VoiceEntry } from './voices.data';
 import apiClient from '../../api/apiClient';
 
 interface VoiceCardProps {
@@ -60,7 +60,7 @@ const VoiceCard = ({ voice, selected, onSelect }: VoiceCardProps) => {
       // Ignore if aborted while request was in flight.
       if (controller.signal.aborted) return;
 
-      const mime = data.contentType || (voice.provider === 'openai' ? 'audio/mpeg' : 'audio/wav');
+      const mime = data.contentType || 'audio/wav';
       const audio = new Audio(`data:${mime};base64,${data.audio}`);
       audioRef.current = audio;
       audio.onended = () => { setPlaying(false); audioRef.current = null; };
@@ -98,9 +98,6 @@ const VoiceCard = ({ voice, selected, onSelect }: VoiceCardProps) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
           <PersonIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
           <Typography variant="body2" fontWeight={600} color="text.primary">{voice.name}</Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-            {getProviderLabel(voice.provider)}
-          </Typography>
           <IconButton
             size="small"
             onClick={handlePlaySample}

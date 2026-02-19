@@ -28,7 +28,7 @@ const PromptFormDialog = ({ open, onClose, onSaved, editItem }: PromptFormDialog
 
   const formik = useFormik<PromptFormValues>({
     initialValues: editItem
-      ? { name: editItem.name, description: editItem.description, systemPrompt: editItem.systemPrompt, language: editItem.language, tags: editItem.tags }
+      ? { name: editItem.name, description: editItem.description, systemPrompt: editItem.systemPrompt, firstMessage: editItem.firstMessage || '', language: editItem.language, tags: editItem.tags }
       : promptInitialValues,
     enableReinitialize: true,
     validationSchema: promptValidationSchema,
@@ -74,6 +74,11 @@ const PromptFormDialog = ({ open, onClose, onSaved, editItem }: PromptFormDialog
             error={formik.touched.systemPrompt && Boolean(formik.errors.systemPrompt)}
             helperText={formik.touched.systemPrompt && formik.errors.systemPrompt}
             multiline rows={6} />
+          <TextField fullWidth size="small" label="First Message" name="firstMessage"
+            value={formik.values.firstMessage} onChange={formik.handleChange}
+            placeholder="Opening message the AI will speak first..."
+            helperText="The AI will speak this message when the call connects"
+            multiline rows={2} />
           <TextField select fullWidth size="small" label="Language" name="language"
             value={formik.values.language} onChange={formik.handleChange}>
             {SUPPORTED_LANGUAGES.map((l) => (

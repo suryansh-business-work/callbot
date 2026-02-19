@@ -31,11 +31,11 @@ const App = () => {
           <SocketProvider>
           <VoiceProvider>
           <ModelProvider>
-            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'background.default' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: 'background.default' }}>
               <Header />
               <Box
                 component="main"
-                sx={{ flex: 1, overflowY: 'auto', py: { xs: 1, sm: 2 }, px: { xs: 1, sm: 2, md: 3 } }}
+                sx={{ flex: 1, overflow: 'auto', py: { xs: 1, sm: 2 }, px: { xs: 1, sm: 2, md: 3 } }}
               >
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />

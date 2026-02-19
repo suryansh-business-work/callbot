@@ -4,6 +4,7 @@ export const createPromptSchema = z.object({
   name: z.string({ required_error: 'Name is required' }).min(2).max(200),
   description: z.string().max(1000).optional().default(''),
   systemPrompt: z.string({ required_error: 'System prompt is required' }).min(10).max(10000),
+  firstMessage: z.string().max(500).optional().default(''),
   language: z.string().optional().default('en-IN'),
   tags: z.array(z.string()).optional().default([]),
 });
@@ -12,6 +13,7 @@ export const updatePromptSchema = z.object({
   name: z.string().min(2).max(200).optional(),
   description: z.string().max(1000).optional(),
   systemPrompt: z.string().min(10).max(10000).optional(),
+  firstMessage: z.string().max(500).optional(),
   language: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });

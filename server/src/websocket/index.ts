@@ -1,14 +1,15 @@
-import { Server as HttpServer } from 'http';
+import http from 'http';
 import { Server, Socket } from 'socket.io';
 import { envConfig } from '../config';
 
 let io: Server | null = null;
 
 /**
- * Initialize Socket.io server attached to the HTTP server.
+ * Initialize Socket.io server on a dedicated WebSocket port.
  */
-export const initSocketIO = (httpServer: HttpServer): Server => {
-  io = new Server(httpServer, {
+export const initSocketIO = (port: number): Server => {
+  const wsServer = http.createServer();
+  io = new Server(wsServer, {
     cors: {
       origin: envConfig.CLIENT_URL,
       methods: ['GET', 'POST'],
@@ -35,7 +36,10 @@ export const initSocketIO = (httpServer: HttpServer): Server => {
     });
   });
 
-  console.log('[Socket] Socket.io initialized');
+  wsServer.listen(port, () => {
+    console.log(`[Socket] WebSocket server running on port ${port}`);
+  });
+
   return io;
 };
 

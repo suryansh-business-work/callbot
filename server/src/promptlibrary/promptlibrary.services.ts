@@ -13,10 +13,11 @@ export const getPrompts = async (
   const filter: Record<string, unknown> = { userId };
 
   if (search) {
+    const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
-      { tags: { $in: [new RegExp(search, 'i')] } },
+      { name: { $regex: escaped, $options: 'i' } },
+      { description: { $regex: escaped, $options: 'i' } },
+      { tags: { $in: [new RegExp(escaped, 'i')] } },
     ];
   }
 

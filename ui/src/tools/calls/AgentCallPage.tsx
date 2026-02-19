@@ -94,7 +94,7 @@ const AgentCallPage = () => {
 
   return (
     <Box sx={{
-      height: 'calc(100vh - 48px)',
+      height: '100%',
       mx: { xs: -1, sm: -2, md: -3 },
       my: { xs: -1, sm: -2 },
       display: 'flex',
