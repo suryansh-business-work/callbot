@@ -17,9 +17,17 @@ export interface VoiceEntry {
 
 /* ─── Sarvam.ai Bulbul v3 speakers ───────────────────────────── */
 export const SARVAM_VOICES: VoiceEntry[] = [
-  { id: 'shubh', name: 'Shubh', gender: 'masculine', tags: ['natural', 'default'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'aditya', name: 'Aditya', gender: 'masculine', tags: ['deep', 'professional'], languages: ['all'], languageCode: 'hi-IN' },
-  { id: 'rahul', name: 'Rahul', gender: 'masculine', tags: ['friendly', 'conversational'], languages: ['all'], languageCode: 'hi-IN' },
+  { id: 'shubh', name: 'Shubh', gender: 'masculine', tags: ['natural', 'default'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'aditya', name: 'Aditya', gender: 'masculine', tags: ['deep', 'professional'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'rahul', name: 'Rahul', gender: 'masculine', tags: ['friendly', 'conversational'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'anushka', name: 'Anushka', gender: 'feminine', tags: ['warm', 'expressive'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'meera', name: 'Meera', gender: 'feminine', tags: ['calm', 'professional'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'maitreyi', name: 'Maitreyi', gender: 'feminine', tags: ['soft', 'gentle'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'sarthak', name: 'Sarthak', gender: 'masculine', tags: ['energetic', 'young'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'arjun', name: 'Arjun', gender: 'masculine', tags: ['authoritative', 'clear'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'amol', name: 'Amol', gender: 'masculine', tags: ['warm', 'narrative'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'amartya', name: 'Amartya', gender: 'masculine', tags: ['formal', 'measured'], languages: ['all'], languageCode: 'en-IN' },
+  { id: 'arvind', name: 'Arvind', gender: 'masculine', tags: ['casual', 'relatable'], languages: ['all'], languageCode: 'en-IN' },
 ];
 
 /* ─── All voices combined ──────────────────────────────────────── */

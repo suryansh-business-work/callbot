@@ -103,7 +103,7 @@ export const remove = async (req: Request, res: Response) => {
 export const executeNow = async (req: Request, res: Response) => {
   const { userId } = req as AuthRequest;
   try {
-    await service.executeScheduledCall(req.params.id, userId!);
+    await service.executeScheduledCall(req.params.id, userId!, true);
     res.json({ success: true, message: 'Scheduled call executed' });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Failed to execute scheduled call';

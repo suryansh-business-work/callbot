@@ -12,6 +12,14 @@ export interface TtsConfig {
   sarvamApiKey: string;
 }
 
+export interface EmailConfig {
+  smtpHost: string;
+  smtpPort: number;
+  smtpUser: string;
+  smtpPass: string;
+  smtpFrom: string;
+}
+
 export interface SettingsData {
   _id: string;
   userId: string;
@@ -19,6 +27,7 @@ export interface SettingsData {
   callConfig: CallConfig;
   aiConfig: AiConfig;
   ttsConfig: TtsConfig;
+  emailConfig: EmailConfig;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +42,7 @@ export interface UpdateSettingsPayload {
   callConfig?: Partial<CallConfig>;
   aiConfig?: Partial<AiConfig>;
   ttsConfig?: Partial<TtsConfig>;
+  emailConfig?: Partial<EmailConfig>;
 }
 
 /* ─── Validation response types ─────────────────────────────────── */

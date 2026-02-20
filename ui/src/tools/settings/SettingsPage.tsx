@@ -8,11 +8,11 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PhoneIcon from '@mui/icons-material/Phone';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import EmailIcon from '@mui/icons-material/Email';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { alpha } from '@mui/material/styles';
 import toast from 'react-hot-toast';
@@ -22,11 +22,13 @@ import { SettingsData } from './settings.types';
 import CallConfigPanel from './components/CallConfigPanel';
 import AiConfigPanel from './components/AiConfigPanel';
 import TtsConfigPanel from './components/TtsConfigPanel';
+import EmailConfigPanel from './components/EmailConfigPanel';
 
 const VERTICAL_TABS = [
   { label: 'Call Config', icon: <PhoneIcon sx={{ fontSize: 18 }} /> },
   { label: 'AI Config', icon: <SmartToyIcon sx={{ fontSize: 18 }} /> },
   { label: 'TTS Config', icon: <RecordVoiceOverIcon sx={{ fontSize: 18 }} /> },
+  { label: 'Email Config', icon: <EmailIcon sx={{ fontSize: 18 }} /> },
 ];
 
 const SettingsPage = () => {
@@ -89,36 +91,6 @@ const SettingsPage = () => {
         </Typography>
       </Box>
 
-      {/* Global config switch */}
-      <Card sx={{ p: 2, mb: 2, borderLeft: '3px solid', borderLeftColor: 'primary.main' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FormControlLabel
-              control={
-                <Switch checked={isCustom} onChange={handleGlobalToggle} color="primary" size="small" />
-              }
-              label={
-                <Typography variant="body2" fontWeight={600}>
-                  Use Custom Configuration
-                </Typography>
-              }
-            />
-            <Tooltip title="When OFF, values from the server .env file are used. When ON, your custom configuration overrides the defaults.">
-              <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help' }} />
-            </Tooltip>
-          </Box>
-          <Typography variant="caption" color="text.secondary">
-            {isCustom ? 'Using custom user configuration' : 'Using global (.env) configuration'}
-          </Typography>
-        </Box>
-      </Card>
-
-      {!isCustom && (
-        <Alert severity="info" sx={{ mb: 2, borderRadius: '4px' }}>
-          Custom configuration is disabled. Enable the switch above to enter your own API keys.
-        </Alert>
-      )}
-
       {/* Vertical tabs + content */}
       {settings && (
         <Card sx={{ display: 'flex', minHeight: 380, overflow: 'hidden' }}>
@@ -136,9 +108,27 @@ const SettingsPage = () => {
             ))}
           </Tabs>
           <Box sx={{ flex: 1, p: 3 }}>
+            {/* Use Custom Config toggle — shown in every panel */}
+            <Card sx={{ p: 1.5, mb: 2.5, borderLeft: '3px solid', borderLeftColor: 'primary.main' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <FormControlLabel
+                    control={<Switch checked={isCustom} onChange={handleGlobalToggle} color="primary" size="small" />}
+                    label={<Typography variant="body2" fontWeight={600}>Use Custom Configuration</Typography>}
+                  />
+                  <Tooltip title="When OFF, server .env values are used. When ON, your custom values override defaults.">
+                    <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help' }} />
+                  </Tooltip>
+                </Box>
+                <Typography variant="caption" color="text.secondary">
+                  {isCustom ? 'Custom config active' : 'Using .env defaults'}
+                </Typography>
+              </Box>
+            </Card>
             {verticalTab === 0 && <CallConfigPanel settings={settings} disabled={!isCustom} onSaved={loadSettings} />}
             {verticalTab === 1 && <AiConfigPanel settings={settings} disabled={!isCustom} onSaved={loadSettings} />}
             {verticalTab === 2 && <TtsConfigPanel settings={settings} disabled={!isCustom} onSaved={loadSettings} />}
+            {verticalTab === 3 && <EmailConfigPanel settings={settings} disabled={!isCustom} onSaved={loadSettings} />}
           </Box>
         </Card>
       )}

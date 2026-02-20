@@ -110,7 +110,13 @@ export const initiateAiCall = async (
   language: string = 'en-IN',
   aiModel?: string
 ) => {
-  const baseUrl = getWebhookBaseUrl();
+  let baseUrl = getWebhookBaseUrl();
+
+  // Retry once if tunnel URL appears unavailable
+  if (baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')) {
+    await new Promise((r) => setTimeout(r, 2000));
+    baseUrl = getWebhookBaseUrl();
+  }
 
   if (baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')) {
     throw new Error(

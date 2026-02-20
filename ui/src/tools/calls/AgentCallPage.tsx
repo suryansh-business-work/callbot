@@ -168,22 +168,17 @@ const AgentCallPage = () => {
         onChange={(size: number) => savePaneSize(uid, 'left', size)}
         style={{ flex: 1, position: 'relative' }}
       >
-        <Box sx={{ ...panelSx, gap: 0.5, p: 0.5 }}>
-          <Box sx={{ flex: '1 1 auto', overflow: 'hidden' }}>
-            <DialerPanel
-              agentId={agentId}
-              initialPhone={initialPhone}
-              activeCallSid={activeCallSid}
-              isCallActive={isCallActive}
-              activePhone={activePhone}
-              onCallStarted={handleCallStarted}
-              onCallEnded={handleCallEnded}
-              historySelection={historySelection}
-            />
-          </Box>
-          <Box sx={{ flex: '0 0 auto', overflow: 'auto', maxHeight: '50%' }}>
-            <CostPanel callDuration={callDuration} isCallActive={isCallActive} />
-          </Box>
+        <Box sx={{ ...panelSx, p: 0.5 }}>
+          <DialerPanel
+            agentId={agentId}
+            initialPhone={initialPhone}
+            activeCallSid={activeCallSid}
+            isCallActive={isCallActive}
+            activePhone={activePhone}
+            onCallStarted={handleCallStarted}
+            onCallEnded={handleCallEnded}
+            historySelection={historySelection}
+          />
         </Box>
         {/* @ts-expect-error react-split-pane types mismatch with React 18 */}
         <SplitPane
@@ -197,8 +192,13 @@ const AgentCallPage = () => {
           <Box sx={{ ...panelSx, p: 0.5 }}>
             <CallLogsPanelCard onSelectLog={handleSelectLog} />
           </Box>
-          <Box sx={{ ...panelSx, p: 0.5 }}>
-            <ChatPanel events={events} isActive={isCallActive} />
+          <Box sx={{ ...panelSx, p: 0.5, gap: 0.5 }}>
+            <Box sx={{ flex: '1 1 auto', overflow: 'hidden' }}>
+              <ChatPanel events={events} isActive={isCallActive} />
+            </Box>
+            <Box sx={{ flex: '0 0 auto', overflow: 'auto', maxHeight: '40%' }}>
+              <CostPanel callDuration={callDuration} isCallActive={isCallActive} />
+            </Box>
           </Box>
         </SplitPane>
       </SplitPane>

@@ -10,6 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { VoiceEntry } from './voices.data';
 import apiClient from '../../api/apiClient';
 
@@ -17,9 +18,10 @@ interface VoiceCardProps {
   voice: VoiceEntry;
   selected: boolean;
   onSelect: (id: string) => void;
+  previewText?: string;
 }
 
-const VoiceCard = ({ voice, selected, onSelect }: VoiceCardProps) => {
+const VoiceCard = ({ voice, selected, onSelect, previewText }: VoiceCardProps) => {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -63,7 +65,7 @@ const VoiceCard = ({ voice, selected, onSelect }: VoiceCardProps) => {
       setLoading(true);
       const { data } = await apiClient.post<{ audio: string; contentType?: string }>(
         '/tts/preview',
-        { speaker: voice.id, language: voice.languageCode },
+        { speaker: voice.id, language: voice.languageCode, text: previewText || undefined },
         { signal: controller.signal }
       );
 
@@ -100,6 +102,13 @@ const VoiceCard = ({ voice, selected, onSelect }: VoiceCardProps) => {
       // Axios CancelledError / AbortError are expected on unmount — suppress.
       if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) return;
       if (axios.isCancel(err)) return;
+
+      // Show user-friendly error from server when available
+      const serverMsg =
+        axios.isAxiosError(err) && err.response?.data?.error
+          ? err.response.data.error
+          : 'Voice preview failed — check API key configuration';
+      toast.error(serverMsg);
       console.error('Failed to play voice preview', err);
     } finally {
       setLoading(false);

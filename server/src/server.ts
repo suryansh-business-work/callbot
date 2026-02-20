@@ -3,7 +3,7 @@ import app from './app';
 import { envConfig } from './config';
 import { connectDB } from './config/db';
 import { initSocketIO } from './websocket';
-import { startTunnel, getTunnelUrl } from './tunnel';
+import { startTunnel, getTunnelUrl, stopTunnel } from './tunnel';
 import { initAllSchedules, stopAllSchedules } from './agents/agents.scheduler';
 import { initRecurringScheduledCalls, stopAllRecurringTasks, processPendingScheduledCalls } from './scheduledcalls/scheduledcalls.services';
 
@@ -66,7 +66,6 @@ const start = async () => {
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  const { stopTunnel } = require('./tunnel');
   stopTunnel();
   stopAllSchedules();
   stopAllRecurringTasks();

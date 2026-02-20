@@ -1,4 +1,4 @@
-export type ScheduledCallStatus = 'pending' | 'completed' | 'cancelled' | 'failed' | 'manual_required';
+export type ScheduledCallStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'failed' | 'manual_required';
 export type ScheduledCallSource = 'manual' | 'ai_detected' | 'agent_cron';
 
 export interface ScheduledCallContact {
@@ -29,6 +29,11 @@ export interface ScheduledCall {
   isRecurring: boolean;
   lastExecutedAt: string | null;
   note: string;
+  voice: string;
+  language: string;
+  systemPrompt: string;
+  message: string;
+  aiEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -42,6 +47,11 @@ export interface CreateScheduledCallPayload {
   cronExpression?: string;
   isRecurring?: boolean;
   note?: string;
+  voice?: string;
+  language?: string;
+  systemPrompt?: string;
+  message?: string;
+  aiEnabled?: boolean;
 }
 
 export interface UpdateScheduledCallPayload {
@@ -52,6 +62,11 @@ export interface UpdateScheduledCallPayload {
   agentId?: string | null;
   cronExpression?: string;
   isRecurring?: boolean;
+  voice?: string;
+  language?: string;
+  systemPrompt?: string;
+  message?: string;
+  aiEnabled?: boolean;
 }
 
 export interface ScheduledCallsResponse {
@@ -73,6 +88,7 @@ export interface ScheduledCallListParams {
   contactId?: string;
   agentId?: string;
   source?: ScheduledCallSource;
+  search?: string;
   sortBy?: 'scheduledAt' | 'createdAt' | 'status';
   sortOrder?: 'asc' | 'desc';
 }

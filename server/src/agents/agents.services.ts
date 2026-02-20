@@ -46,12 +46,32 @@ export const updateAgent = async (
   agentId: string,
   data: UpdateAgentInput
 ): Promise<IAgent | null> => {
-  const agent = await Agent.findOneAndUpdate({ _id: agentId, userId }, data, { returnDocument: 'after', runValidators: true });
+  // First fetch the existing agent to safely merge schedule fields
+  const existing = await Agent.findOne({ _id: agentId, userId });
+  if (!existing) return null;
 
-  // Manage schedule based on update
+  // Merge incoming schedule with existing schedule to prevent accidental overwrite
+  if (data.schedule) {
+    const existingSchedule = {
+      cronExpression: existing.schedule.cronExpression,
+      contactIds: existing.schedule.contactIds.map((id) => id.toString()),
+      isActive: existing.schedule.isActive,
+    };
+    const mergedSchedule = { ...existingSchedule, ...data.schedule };
+    data = { ...data, schedule: mergedSchedule as UpdateAgentInput['schedule'] };
+  }
+
+  const agent = await Agent.findOneAndUpdate(
+    { _id: agentId, userId },
+    data,
+    { returnDocument: 'after', runValidators: true }
+  );
+
+  // Manage schedule based on merged values
   if (agent && data.schedule) {
-    if (data.schedule.isActive && data.schedule.cronExpression) {
-      startSchedule(agentId, data.schedule.cronExpression);
+    const { isActive, cronExpression } = agent.schedule;
+    if (isActive && cronExpression && agent.allowScheduling) {
+      startSchedule(agentId, cronExpression);
     } else {
       stopSchedule(agentId);
     }

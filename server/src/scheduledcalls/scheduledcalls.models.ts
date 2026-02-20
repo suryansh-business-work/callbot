@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export type ScheduledCallStatus = 'pending' | 'completed' | 'cancelled' | 'failed' | 'manual_required';
+export type ScheduledCallStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'failed' | 'manual_required';
 export type ScheduledCallSource = 'manual' | 'ai_detected' | 'agent_cron';
 
 export interface IScheduledCall extends Document {
@@ -20,6 +20,12 @@ export interface IScheduledCall extends Document {
   isRecurring: boolean;
   lastExecutedAt: Date | null;
   note: string;
+  /** Call configuration overrides */
+  voice: string;
+  language: string;
+  systemPrompt: string;
+  message: string;
+  aiEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,7 +38,7 @@ const scheduledCallSchema = new Schema<IScheduledCall>(
     scheduledAt: { type: Date, required: true, index: true },
     status: {
       type: String,
-      enum: ['pending', 'completed', 'cancelled', 'failed', 'manual_required'],
+      enum: ['pending', 'in_progress', 'completed', 'cancelled', 'failed', 'manual_required'],
       default: 'pending',
       index: true,
     },
@@ -48,6 +54,11 @@ const scheduledCallSchema = new Schema<IScheduledCall>(
     isRecurring: { type: Boolean, default: false },
     lastExecutedAt: { type: Date, default: null },
     note: { type: String, default: '' },
+    voice: { type: String, default: '' },
+    language: { type: String, default: '' },
+    systemPrompt: { type: String, default: '' },
+    message: { type: String, default: '' },
+    aiEnabled: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

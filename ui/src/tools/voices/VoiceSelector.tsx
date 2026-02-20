@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import { ALL_VOICES, getVoiceById } from './voices.data';
 import VoiceCard from './VoiceCard';
 
@@ -19,6 +20,7 @@ interface VoiceSelectorProps {
 const VoiceSelector = ({ value, onChange, disabled }: VoiceSelectorProps) => {
   const [tab, setTab] = useState<'all' | 'feminine' | 'masculine'>('all');
   const [search, setSearch] = useState('');
+  const [previewText, setPreviewText] = useState('Hello, I am your AI assistant. How can I help you today?');
 
   const filtered = useMemo(() => {
     let list = tab === 'all' ? ALL_VOICES : ALL_VOICES.filter((v) => v.gender === tab);
@@ -77,6 +79,23 @@ const VoiceSelector = ({ value, onChange, disabled }: VoiceSelectorProps) => {
         sx={{ mb: 1.5 }}
       />
 
+      {/* Preview text */}
+      <TextField
+        label="Preview Text"
+        placeholder="Type text to preview voices..."
+        value={previewText}
+        onChange={(e) => setPreviewText(e.target.value)}
+        fullWidth
+        size="small"
+        multiline
+        minRows={2}
+        maxRows={3}
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><RecordVoiceOverIcon fontSize="small" sx={{ mt: 0.5 }} /></InputAdornment>,
+        }}
+        sx={{ mb: 1.5 }}
+      />
+
       {/* Voice grid */}
       <Box sx={{ maxHeight: 320, overflowY: 'auto', pr: 0.5 }}>
         {filtered.length === 0 ? (
@@ -87,7 +106,7 @@ const VoiceSelector = ({ value, onChange, disabled }: VoiceSelectorProps) => {
           <Grid container spacing={1}>
             {filtered.map((voice) => (
               <Grid item xs={12} sm={6} key={voice.id}>
-                <VoiceCard voice={voice} selected={value === voice.id} onSelect={onChange} />
+                <VoiceCard voice={voice} selected={value === voice.id} onSelect={onChange} previewText={previewText} />
               </Grid>
             ))}
           </Grid>

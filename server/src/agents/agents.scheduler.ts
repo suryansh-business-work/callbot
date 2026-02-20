@@ -1,20 +1,25 @@
 import cron, { ScheduledTask } from 'node-cron';
 import Agent from './agents.models';
 import Contact from '../contacts/contacts.models';
-import { initiateAiCall } from '../ai/ai.services';
+import ScheduledCall from '../scheduledcalls/scheduledcalls.models';
+import { executeScheduledCall } from '../scheduledcalls/scheduledcalls.services';
 import { VoiceOption } from '../calls/calls.models';
 import { emitGlobal } from '../websocket';
 
 /** Map of agentId -> cron task */
 const activeTasks = new Map<string, ScheduledTask>();
 
+/** Delay helper to avoid Twilio rate limits */
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 /**
  * Execute scheduled calls for an agent - calls each selected contact
+ * by creating ScheduledCall records so they appear in the Scheduler UI.
  */
 const executeScheduledCalls = async (agentId: string): Promise<void> => {
   try {
     const agent = await Agent.findById(agentId);
-    if (!agent || !agent.schedule.isActive) return;
+    if (!agent || !agent.schedule.isActive || !agent.allowScheduling) return;
 
     const contacts = await Contact.find({
       _id: { $in: agent.schedule.contactIds },
@@ -34,19 +39,26 @@ const executeScheduledCalls = async (agentId: string): Promise<void> => {
       'schedule.lastRunAt': new Date(),
     });
 
-    // Initiate calls for each contact (sequentially to avoid rate limits)
+    const userId = agent.userId.toString();
+
+    // Create ScheduledCall records and execute them so they appear in the Scheduler UI
     for (const contact of contacts) {
       if (!contact.phone) continue;
       try {
-        await initiateAiCall(
-          contact.phone,
-          agent.greeting,
-          agent.voice as VoiceOption,
-          agent.systemPrompt,
+        // Create a ScheduledCall record for audit trail
+        const sc = await ScheduledCall.create({
+          userId,
+          contactId: contact._id,
           agentId,
-          agent.userId.toString(),
-          'en-IN'
-        );
+          scheduledAt: new Date(),
+          source: 'agent_cron',
+          reason: `Auto-scheduled by agent "${agent.name}"`,
+          status: 'pending',
+        });
+
+        // Execute via the unified ScheduledCall pipeline
+        await executeScheduledCall(sc._id.toString(), userId, true);
+
         console.log(
           `[Scheduler] Agent ${agent.name}: called ${contact.firstName} ${contact.lastName} at ${contact.phone}`
         );
@@ -55,6 +67,11 @@ const executeScheduledCalls = async (agentId: string): Promise<void> => {
         console.error(
           `[Scheduler] Agent ${agent.name}: failed to call ${contact.phone} - ${msg}`
         );
+      }
+
+      // Add 2-second delay between calls to avoid Twilio rate limits
+      if (contacts.indexOf(contact) < contacts.length - 1) {
+        await delay(2000);
       }
     }
 
@@ -113,6 +130,7 @@ export const initAllSchedules = async (): Promise<void> => {
     const agents = await Agent.find({
       'schedule.isActive': true,
       'schedule.cronExpression': { $ne: '' },
+      allowScheduling: true,
     });
 
     for (const agent of agents) {

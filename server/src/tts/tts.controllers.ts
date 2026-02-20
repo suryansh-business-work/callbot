@@ -67,17 +67,29 @@ export const previewVoice = async (req: Request, res: Response): Promise<void> =
     const contentType = speaker.startsWith('openai-') ? 'audio/mpeg' : 'audio/wav';
     res.json({ audio: base64Audio, contentType });
   } catch (err: unknown) {
-    // AbortError means the client closed the connection — not a real error.
+    // If the client already disconnected there is nothing to send.
+    if (res.destroyed || res.headersSent) return;
+
     const isAbort = err instanceof Error && (
       err.name === 'AbortError' ||
       err.message === 'AbortError' ||
       err.message === 'Aborted' ||
       err.message?.includes('abort')
     );
-    if (isAbort) return;
-    if (!res.destroyed && !res.headersSent) {
-      console.error('[TTS Preview] Error:', err);
-      res.status(500).json({ error: 'Failed to generate voice preview' });
+
+    // If the abort was caused by the *client* closing the connection, skip.
+    // Otherwise (server-side timeout / Sarvam latency) the client is still
+    // waiting — send a proper error so the UI can show feedback.
+    if (isAbort && req.destroyed) return;
+
+    if (isAbort) {
+      console.warn('[TTS Preview] Sarvam request timed out');
+      res.status(504).json({ error: 'Voice preview timed out — please try again' });
+      return;
     }
+
+    console.error('[TTS Preview] Error:', err);
+    const message = err instanceof Error ? err.message : 'Failed to generate voice preview';
+    res.status(500).json({ error: message });
   }
 };

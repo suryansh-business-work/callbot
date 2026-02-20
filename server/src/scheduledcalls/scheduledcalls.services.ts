@@ -1,9 +1,11 @@
 import cron, { ScheduledTask } from 'node-cron';
 import ScheduledCall, { IScheduledCall } from './scheduledcalls.models';
 import Agent from '../agents/agents.models';
+import Contact from '../contacts/contacts.models';
 import { initiateAiCall } from '../ai/ai.services';
 import { VoiceOption } from '../calls/calls.models';
 import { emitGlobal } from '../websocket';
+import { escapeRegex } from '../utils/regex';
 import {
   CreateScheduledCallInput,
   UpdateScheduledCallInput,
@@ -39,6 +41,11 @@ export const createScheduledCall = async (
     cronExpression: data.cronExpression,
     isRecurring: data.isRecurring,
     note: data.note,
+    voice: data.voice,
+    language: data.language,
+    systemPrompt: data.systemPrompt,
+    message: data.message,
+    aiEnabled: data.aiEnabled,
     manualOnly,
     status: manualOnly ? 'manual_required' : 'pending',
   });
@@ -61,13 +68,31 @@ export const getScheduledCalls = async (
   userId: string,
   query: ScheduledCallListQueryInput
 ) => {
-  const { page, pageSize, status, contactId, agentId, source, sortBy, sortOrder } = query;
+  const { page, pageSize, status, contactId, agentId, source, sortBy, sortOrder, search } = query;
   const filter: Record<string, unknown> = { userId };
 
   if (status) filter.status = status;
   if (contactId) filter.contactId = contactId;
   if (agentId) filter.agentId = agentId;
   if (source) filter.source = source;
+
+  // Text search: match against contact name/phone or reason/note
+  if (search) {
+    const regex = escapeRegex(search);
+    const matchingContacts = await Contact.find({
+      $or: [
+        { firstName: { $regex: regex, $options: 'i' } },
+        { lastName: { $regex: regex, $options: 'i' } },
+        { phone: { $regex: regex, $options: 'i' } },
+      ],
+    }).select('_id').lean();
+    const contactIds = matchingContacts.map((c) => c._id);
+    filter.$or = [
+      { contactId: { $in: contactIds } },
+      { reason: { $regex: regex, $options: 'i' } },
+      { note: { $regex: regex, $options: 'i' } },
+    ];
+  }
 
   const [data, total] = await Promise.all([
     ScheduledCall.find(filter)
@@ -138,11 +163,17 @@ export const deleteScheduledCall = async (userId: string, id: string) => {
 
 /* ─── Execute a scheduled call ───────────────────────────────── */
 
-export const executeScheduledCall = async (scheduledCallId: string, userId: string): Promise<void> => {
+export const executeScheduledCall = async (
+  scheduledCallId: string,
+  userId: string,
+  /** When true (e.g. 'Execute Now' from UI), bypass the manualOnly guard */
+  force: boolean = false
+): Promise<void> => {
   const sc = await ScheduledCall.findById(scheduledCallId).populate('contactId', 'firstName lastName phone');
   if (!sc || sc.status === 'completed' || sc.status === 'cancelled') return;
 
-  if (sc.manualOnly) {
+  // Only block automatic execution; forced (manual) execution is allowed
+  if (sc.manualOnly && !force) {
     sc.status = 'manual_required';
     await sc.save();
     emitGlobal('scheduledcall:manual_required', {
@@ -165,15 +196,29 @@ export const executeScheduledCall = async (scheduledCallId: string, userId: stri
     agent = await Agent.findById(sc.agentId);
   }
 
+  // Mark as in-progress and broadcast so the UI updates live
+  sc.status = 'in_progress';
+  await sc.save();
+  emitGlobal('scheduledcall:in_progress', {
+    scheduledCallId: sc._id,
+    contactName: `${contact.firstName} ${contact.lastName}`,
+  });
+
   try {
+    // Use per-schedule overrides when present, else fall back to agent defaults
+    const voice = (sc.voice || agent?.voice || 'shubh') as VoiceOption;
+    const greeting = sc.message || agent?.greeting || 'Hello! I am calling as scheduled.';
+    const systemPrompt = sc.systemPrompt || agent?.systemPrompt;
+    const language = sc.language || 'en-IN';
+
     const result = await initiateAiCall(
       contact.phone,
-      agent?.greeting || 'Hello! I am calling as scheduled.',
-      (agent?.voice || 'anushka') as VoiceOption,
-      agent?.systemPrompt,
+      greeting,
+      voice,
+      systemPrompt,
       sc.agentId?.toString(),
       userId,
-      'en-IN'
+      language
     );
 
     sc.status = 'completed';
@@ -237,7 +282,7 @@ export const processPendingScheduledCalls = async (): Promise<void> => {
 
 export const initRecurringScheduledCalls = async (): Promise<void> => {
   const recurring = await ScheduledCall.find({
-    status: { $in: ['pending', 'manual_required'] },
+    status: 'pending',
     isRecurring: true,
     cronExpression: { $ne: '' },
     manualOnly: false,

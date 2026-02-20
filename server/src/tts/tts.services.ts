@@ -26,6 +26,23 @@ const SARVAM_API_URL = 'https://api.sarvam.ai/text-to-speech';
 const TTS_TIMEOUT_MS = 8000; // 8 s max per Sarvam call
 
 /**
+ * All valid Sarvam.ai bulbul:v3 speaker IDs.
+ * Any value not in this set will be substituted with the default.
+ */
+const VALID_SARVAM_SPEAKERS = new Set([
+  'shubh', 'aditya', 'rahul', 'anushka', 'meera', 'sarthak',
+  'arjun', 'amol', 'maitreyi', 'amartya', 'arvind',
+]);
+
+const DEFAULT_SARVAM_SPEAKER = 'shubh';
+
+/** Sanitise a speaker string — return it if valid, otherwise use the default. */
+const sanitiseSpeaker = (speaker: string): string =>
+  VALID_SARVAM_SPEAKERS.has(speaker.toLowerCase())
+    ? speaker.toLowerCase()
+    : DEFAULT_SARVAM_SPEAKER;
+
+/**
  * Internal fetch wrapper with timeout.
  */
 const fetchWithTimeout = (url: string, init: RequestInit, timeoutMs = TTS_TIMEOUT_MS): Promise<Response> => {
@@ -49,12 +66,19 @@ const fetchWithTimeout = (url: string, init: RequestInit, timeoutMs = TTS_TIMEOU
 export const generateSpeech = async (
   text: string,
   targetLanguageCode: string = 'en-IN',
-  speaker: string = 'meera',
+  speaker: string = DEFAULT_SARVAM_SPEAKER,
   pace: number = 1.0
 ): Promise<Buffer> => {
   const apiKey = envConfig.SARVAM_API_KEY;
   if (!apiKey) {
     throw new Error('SARVAM_API_KEY is not configured in .env');
+  }
+
+  // Validate speaker — fall back to default if caller passed an invalid value
+  // (e.g. a Twilio Polly name like "Polly.Joanna-Neural")
+  const safeSpeaker = sanitiseSpeaker(speaker);
+  if (safeSpeaker !== speaker) {
+    console.warn(`[Sarvam TTS] Unknown speaker "${speaker}", falling back to "${safeSpeaker}"`);
   }
 
   // Sarvam.ai supports max 2500 chars for bulbul:v3
@@ -69,7 +93,7 @@ export const generateSpeech = async (
     body: JSON.stringify({
       text: truncatedText,
       target_language_code: targetLanguageCode,
-      speaker,
+      speaker: safeSpeaker,
       model: 'bulbul:v3',
       pace,
       speech_sample_rate: 8000,
@@ -109,6 +133,8 @@ export const generateAndCacheAudio = async (
   speaker: string,
   pace: number = 1.0
 ): Promise<string> => {
+  // Sanitise speaker before caching — avoids caching under an invalid key
+  speaker = sanitiseSpeaker(speaker);
   const baseUrl = getTunnelUrl() || envConfig.BASE_URL;
 
   // Dedup check — same text+speaker+lang already cached?
@@ -142,6 +168,7 @@ export const generatePreviewSpeech = async (
   languageCode: string = 'en-IN',
   signal?: AbortSignal
 ): Promise<string> => {
+  speaker = sanitiseSpeaker(speaker);
   // Check cache first — same speaker + same text = same audio
   const cacheKey = getPreviewCacheKey(speaker, text, languageCode);
   const cached = previewCache.get(cacheKey);

@@ -6,10 +6,17 @@ const scheduleSchema = z.object({
   isActive: z.boolean().optional().default(false),
 });
 
+/** Update variant: no defaults so absent fields don't overwrite existing values */
+const updateScheduleSchema = z.object({
+  cronExpression: z.string().max(100).optional(),
+  contactIds: z.array(z.string()).optional(),
+  isActive: z.boolean().optional(),
+});
+
 export const createAgentSchema = z.object({
   name: z.string({ required_error: 'Agent name is required' }).min(2).max(100),
   systemPrompt: z.string({ required_error: 'System prompt is required' }).min(10).max(5000),
-  voice: z.string().min(1).optional().default('Polly.Joanna-Neural'),
+  voice: z.string().min(1).optional().default('shubh'),
   greeting: z
     .string()
     .max(500)
@@ -26,7 +33,7 @@ export const updateAgentSchema = z.object({
   greeting: z.string().max(500).optional(),
   image: z.string().url().nullable().optional(),
   allowScheduling: z.boolean().optional(),
-  schedule: scheduleSchema.optional(),
+  schedule: updateScheduleSchema.optional(),
 });
 
 export const agentListQuerySchema = z.object({

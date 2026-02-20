@@ -2,24 +2,24 @@ import { createTheme, alpha, PaletteMode } from '@mui/material/styles';
 
 /* ─── Design tokens ─────────────────────────────────────────────── */
 const LIGHT = {
-  primary: '#00BFA6',
-  primaryLight: '#33CCBB',
-  primaryDark: '#009688',
+  primary: '#1337EC',
+  primaryLight: '#4F6BF0',
+  primaryDark: '#0D24B8',
   accent: '#6366F1',
-  bg: '#F8FAFB',
+  bg: '#F5F7FA',
   paper: '#FFFFFF',
-  surface: '#F1F4F8',
-  border: '#E0E5EC',
+  surface: '#EEF1F6',
+  border: '#D8DDE6',
   textPrimary: '#0F172A',
   textSecondary: '#64748B',
-  glow: 'rgba(0, 191, 166, 0.12)',
-  cardHover: 'rgba(0, 191, 166, 0.04)',
+  glow: 'rgba(19, 55, 236, 0.12)',
+  cardHover: 'rgba(19, 55, 236, 0.04)',
 };
 
 const DARK = {
-  primary: '#00E5CC',
-  primaryLight: '#33EED9',
-  primaryDark: '#00BFA6',
+  primary: '#4F6BF0',
+  primaryLight: '#7B92F5',
+  primaryDark: '#1337EC',
   accent: '#818CF8',
   bg: '#060A13',
   paper: '#0C1220',
@@ -27,8 +27,8 @@ const DARK = {
   border: '#1C2640',
   textPrimary: '#EDF2F7',
   textSecondary: '#8896AB',
-  glow: 'rgba(0, 229, 204, 0.08)',
-  cardHover: 'rgba(0, 229, 204, 0.03)',
+  glow: 'rgba(79, 107, 240, 0.10)',
+  cardHover: 'rgba(79, 107, 240, 0.04)',
 };
 
 /* ─── Shared shadow factories ────────────────────────────────────── */

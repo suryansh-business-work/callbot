@@ -15,6 +15,13 @@ export interface ISettings extends Document {
   ttsConfig: {
     sarvamApiKey: string;
   };
+  emailConfig: {
+    smtpHost: string;
+    smtpPort: number;
+    smtpUser: string;
+    smtpPass: string;
+    smtpFrom: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +40,13 @@ const settingsSchema = new Schema<ISettings>(
     },
     ttsConfig: {
       sarvamApiKey: { type: String, default: '' },
+    },
+    emailConfig: {
+      smtpHost: { type: String, default: '' },
+      smtpPort: { type: Number, default: 587 },
+      smtpUser: { type: String, default: '' },
+      smtpPass: { type: String, default: '' },
+      smtpFrom: { type: String, default: '' },
     },
   },
   { timestamps: true }

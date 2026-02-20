@@ -43,6 +43,18 @@ export const updateSettings = async (
     if (data.ttsConfig.sarvamApiKey !== undefined)
       update['ttsConfig.sarvamApiKey'] = data.ttsConfig.sarvamApiKey;
   }
+  if (data.emailConfig) {
+    if (data.emailConfig.smtpHost !== undefined)
+      update['emailConfig.smtpHost'] = data.emailConfig.smtpHost;
+    if (data.emailConfig.smtpPort !== undefined)
+      update['emailConfig.smtpPort'] = data.emailConfig.smtpPort;
+    if (data.emailConfig.smtpUser !== undefined)
+      update['emailConfig.smtpUser'] = data.emailConfig.smtpUser;
+    if (data.emailConfig.smtpPass !== undefined)
+      update['emailConfig.smtpPass'] = data.emailConfig.smtpPass;
+    if (data.emailConfig.smtpFrom !== undefined)
+      update['emailConfig.smtpFrom'] = data.emailConfig.smtpFrom;
+  }
 
   const settings = await Settings.findOneAndUpdate(
     { userId },

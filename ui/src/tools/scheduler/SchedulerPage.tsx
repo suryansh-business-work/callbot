@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { alpha } from '@mui/material/styles';
 import toast from 'react-hot-toast';
 import AppBreadcrumb from '../../components/AppBreadcrumb';
+import { useSocket } from '../../context/SocketContext';
 import { fetchScheduledCalls } from './scheduler.api';
 import { ScheduledCall, ScheduledCallListParams } from './scheduler.types';
 import SchedulerTable from './components/SchedulerTable';
@@ -21,7 +22,11 @@ const SchedulerPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'scheduledAt' | 'createdAt' | 'status'>('scheduledAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { socket } = useSocket();
 
   const loadCalls = useCallback(async () => {
     setLoading(true);
@@ -29,10 +34,11 @@ const SchedulerPage = () => {
       const params: ScheduledCallListParams = {
         page: page + 1,
         pageSize: rowsPerPage,
-        sortBy: 'scheduledAt',
-        sortOrder: 'asc',
+        sortBy,
+        sortOrder,
       };
       if (statusFilter) params.status = statusFilter as ScheduledCallListParams['status'];
+      if (search.trim()) params.search = search.trim();
       const res = await fetchScheduledCalls(params);
       if (res.success) {
         setCalls(res.data);
@@ -43,9 +49,30 @@ const SchedulerPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, statusFilter]);
+  }, [page, rowsPerPage, statusFilter, search, sortBy, sortOrder]);
 
   useEffect(() => { loadCalls(); }, [loadCalls]);
+
+  // Real-time updates via WebSocket
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRefresh = () => { loadCalls(); };
+
+    socket.on('scheduledcall:created', handleRefresh);
+    socket.on('scheduledcall:executed', handleRefresh);
+    socket.on('scheduledcall:in_progress', handleRefresh);
+    socket.on('scheduledcall:manual_required', handleRefresh);
+    socket.on('schedule:executed', handleRefresh);
+
+    return () => {
+      socket.off('scheduledcall:created', handleRefresh);
+      socket.off('scheduledcall:executed', handleRefresh);
+      socket.off('scheduledcall:in_progress', handleRefresh);
+      socket.off('scheduledcall:manual_required', handleRefresh);
+      socket.off('schedule:executed', handleRefresh);
+    };
+  }, [socket, loadCalls]);
 
   return (
     <Box>
@@ -90,9 +117,14 @@ const SchedulerPage = () => {
             page={page}
             rowsPerPage={rowsPerPage}
             statusFilter={statusFilter}
+            search={search}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
             onPageChange={setPage}
             onRowsPerPageChange={(v) => { setRowsPerPage(v); setPage(0); }}
             onStatusFilterChange={(v) => { setStatusFilter(v); setPage(0); }}
+            onSearchChange={(v) => { setSearch(v); setPage(0); }}
+            onSortChange={(field, order) => { setSortBy(field); setSortOrder(order); }}
             onRefresh={loadCalls}
           />
         )}
