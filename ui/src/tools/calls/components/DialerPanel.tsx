@@ -5,7 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import toast from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { makeCallValidationSchema, makeCallInitialValues, MakeCallFormValues } from '../calls.validation';
-import { makeCall, makeAiCall } from '../calls.api';
+import { makeCall, makeAiCall, makeStreamingCall } from '../calls.api';
 import { CallResponse, VoiceOption } from '../calls.types';
 import { fetchAgentById } from '../../agents/agents.api';
 import { useVoice } from '../../../context/VoiceContext';
@@ -48,7 +48,8 @@ const DialerPanel = ({ agentId, initialPhone, activeCallSid, isCallActive, activ
         let response: CallResponse;
         if (values.aiEnabled) {
           const combinedPrompt = [values.systemPrompt, values.additionalPrompt].filter(Boolean).join('\n\n');
-          response = await makeAiCall({
+          const callFn = values.streaming ? makeStreamingCall : makeAiCall;
+          response = await callFn({
             to: values.to,
             message: values.message || undefined,
             voice: values.voice as VoiceOption,
@@ -67,7 +68,7 @@ const DialerPanel = ({ agentId, initialPhone, activeCallSid, isCallActive, activ
           });
         }
         if (response.success && response.data) {
-          toast.success(values.aiEnabled ? 'AI call started!' : 'Call initiated!');
+          toast.success(values.aiEnabled ? (values.streaming ? 'Streaming AI call started!' : 'AI call started!') : 'Call initiated!');
           onCallStarted(
             response.data.callSid,
             values.to,

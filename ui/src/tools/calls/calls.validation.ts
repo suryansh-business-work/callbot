@@ -12,6 +12,7 @@ export const makeCallValidationSchema = Yup.object().shape({
   voice: Yup.string().notRequired(),
   language: Yup.string().notRequired(),
   aiEnabled: Yup.boolean().notRequired(),
+  streaming: Yup.boolean().notRequired(),
   systemPrompt: Yup.string()
     .max(2000, 'System prompt must be under 2000 characters')
     .notRequired(),
@@ -26,6 +27,7 @@ export interface MakeCallFormValues {
   voice: string;
   language: string;
   aiEnabled: boolean;
+  streaming: boolean;
   systemPrompt: string;
   additionalPrompt: string;
 }
@@ -39,6 +41,7 @@ export const makeCallInitialValues: MakeCallFormValues = {
   voice: '',
   language: 'en-IN',
   aiEnabled: false,
+  streaming: false,
   systemPrompt: DEFAULT_SYSTEM_PROMPT,
   additionalPrompt: '',
 };

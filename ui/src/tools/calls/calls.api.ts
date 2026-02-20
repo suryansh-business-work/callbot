@@ -25,6 +25,19 @@ export const makeAiCall = async (payload: AiCallPayload): Promise<CallResponse> 
   return response.data;
 };
 
+export const makeStreamingCall = async (payload: AiCallPayload): Promise<CallResponse> => {
+  const response = await apiClient.post<CallResponse>('/ai/stream/call', {
+    to: payload.to,
+    message: payload.message,
+    voice: payload.voice,
+    systemPrompt: payload.systemPrompt,
+    agentId: payload.agentId,
+    language: payload.language,
+    aiModel: payload.aiModel,
+  });
+  return response.data;
+};
+
 export const fetchCallLogs = async (params?: CallLogsParams): Promise<CallLogsResponse> => {
   const response = await apiClient.get<CallLogsResponse>('/calls/logs', { params });
   return response.data;

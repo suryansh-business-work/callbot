@@ -18,6 +18,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CallIcon from '@mui/icons-material/Call';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import TranslateIcon from '@mui/icons-material/Translate';
+import StreamIcon from '@mui/icons-material/Stream';
 import { alpha } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import { getVoiceLabel, getVoiceLanguageCode, getVoicesByLanguage } from '../../voices/voices.data';
@@ -201,6 +202,29 @@ const DialerForm = ({
                 </MenuItem>
               ))}
             </TextField>
+            <Box sx={{
+              border: '1px solid',
+              borderColor: formik.values.streaming ? 'success.main' : 'divider',
+              bgcolor: formik.values.streaming ? (t) => alpha(t.palette.success.main, 0.06) : 'transparent',
+              p: 0.6, borderRadius: 1, transition: 'all 0.2s ease',
+            }}>
+              <FormControlLabel
+                control={<Switch checked={formik.values.streaming}
+                  onChange={(e) => formik.setFieldValue('streaming', e.target.checked)}
+                  size="small" disabled={disabled} color="success" />}
+                label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <StreamIcon sx={{ fontSize: 15, color: formik.values.streaming ? 'success.main' : 'text.secondary' }} />
+                  <Typography variant="body2" sx={{ fontSize: '0.72rem', fontWeight: formik.values.streaming ? 700 : 400 }}>
+                    Streaming Mode
+                  </Typography>
+                  <Chip label="Beta" size="small" color="success" variant="outlined"
+                    sx={{ height: 16, fontSize: '0.55rem', ml: 0.5 }} />
+                </Box>}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.62rem', ml: 4 }}>
+                Real-time audio streaming for faster responses
+              </Typography>
+            </Box>
             <AgentPromptSelect value={selectedPromptId} onChange={handlePromptSelect} disabled={disabled} />
             <TextField fullWidth size="small" label="Agent Prompt (from library)" name="systemPrompt"
               value={formik.values.systemPrompt} onChange={formik.handleChange}
