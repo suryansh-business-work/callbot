@@ -1,5 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface ISchedule {
+  cronExpression: string;
+  contactIds: mongoose.Types.ObjectId[];
+  isActive: boolean;
+  lastRunAt: Date | null;
+  nextRunAt: Date | null;
+}
+
 export interface IAgent extends Document {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
@@ -8,6 +16,8 @@ export interface IAgent extends Document {
   voice: string;
   greeting: string;
   image: string | null;
+  allowScheduling: boolean;
+  schedule: ISchedule;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +33,14 @@ const agentSchema = new Schema<IAgent>(
       default: 'Hello! I am your AI assistant. How can I help you today?',
     },
     image: { type: String, default: null },
+    allowScheduling: { type: Boolean, default: true },
+    schedule: {
+      cronExpression: { type: String, default: '' },
+      contactIds: [{ type: Schema.Types.ObjectId, ref: 'Contact' }],
+      isActive: { type: Boolean, default: false },
+      lastRunAt: { type: Date, default: null },
+      nextRunAt: { type: Date, default: null },
+    },
   },
   { timestamps: true }
 );

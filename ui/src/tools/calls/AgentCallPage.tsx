@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import SplitPane from 'react-split-pane';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import DialerPanel from './components/DialerPanel';
 import CallLogsPanelCard from './components/CallLogsPanelCard';
 import ChatPanel from './components/ChatPanel';
+import CostPanel from './components/CostPanel';
 import { ConversationEvent, CallLogItem } from './calls.types';
 import { fetchCallDetail } from './calls.api';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface HistorySelection {
   to: string;
@@ -18,16 +20,39 @@ interface HistorySelection {
   message: string;
 }
 
-const BORDER_RADIUS = '4px';
+/** localStorage helper for split pane sizes keyed by user */
+const PANE_KEY_PREFIX = 'call_pane_';
+const getPaneKey = (userId: string, pane: string) => `${PANE_KEY_PREFIX}${userId}_${pane}`;
+const loadPaneSize = (userId: string, pane: string, fallback: number | string) => {
+  try {
+    const val = localStorage.getItem(getPaneKey(userId, pane));
+    if (!val) return fallback;
+    return val.includes('%') ? val : Number(val);
+  } catch { return fallback; }
+};
+const savePaneSize = (userId: string, pane: string, size: number) => {
+  try { localStorage.setItem(getPaneKey(userId, pane), String(size)); } catch { /* ignore */ }
+};
 
 const AgentCallPage = () => {
   const { agentId } = useParams<{ agentId: string }>();
+  const [searchParams] = useSearchParams();
+  const initialPhone = searchParams.get('phone') || '';
   const { socket } = useSocket();
+  const { user } = useAuth();
+  const uid = user?._id || 'default';
   const [activeCallSid, setActiveCallSid] = useState<string | null>(null);
   const [events, setEvents] = useState<ConversationEvent[]>([]);
   const [isCallActive, setIsCallActive] = useState(false);
   const [activePhone, setActivePhone] = useState('');
+  const [callDuration, setCallDuration] = useState(0);
   const [historySelection, setHistorySelection] = useState<HistorySelection | null>(null);
+
+  useEffect(() => {
+    if (!isCallActive) { setCallDuration(0); return; }
+    const t = setInterval(() => setCallDuration((d) => d + 1), 1000);
+    return () => clearInterval(t);
+  }, [isCallActive]);
 
   const handleCallStarted = useCallback((callSid: string, phone: string, initialMsg?: string) => {
     setActiveCallSid(callSid);
@@ -99,7 +124,7 @@ const AgentCallPage = () => {
     display: 'flex',
     flexDirection: 'column' as const,
     overflow: 'hidden',
-    borderRadius: BORDER_RADIUS,
+    borderRadius: '4px',
   };
 
   return (
@@ -121,33 +146,58 @@ const AgentCallPage = () => {
           backgroundClip: 'padding-box',
         },
         '& .Resizer.vertical': {
-          width: 6,
-          borderLeft: '2px solid transparent',
-          borderRight: '2px solid transparent',
+          width: 8,
+          mx: '1px',
+          borderRadius: '4px',
+          background: (t) => t.palette.divider,
           cursor: 'col-resize',
-          '&:hover': { borderLeft: '2px solid', borderRight: '2px solid', borderColor: 'primary.main' },
+          transition: 'background 0.2s ease, box-shadow 0.2s ease',
+          '&:hover': {
+            background: (t) => t.palette.primary.main,
+            boxShadow: (t) => `0 0 6px ${t.palette.primary.main}40`,
+          },
         },
       }}
     >
       {/* @ts-expect-error react-split-pane types mismatch with React 18 */}
-      <SplitPane split="vertical" minSize={220} maxSize={400} defaultSize={280} style={{ flex: 1, position: 'relative' }}>
-        <Box sx={panelSx}>
-          <DialerPanel
-            agentId={agentId}
-            activeCallSid={activeCallSid}
-            isCallActive={isCallActive}
-            activePhone={activePhone}
-            onCallStarted={handleCallStarted}
-            onCallEnded={handleCallEnded}
-            historySelection={historySelection}
-          />
+      <SplitPane
+        split="vertical"
+        minSize={220}
+        maxSize={400}
+        defaultSize={loadPaneSize(uid, 'left', 280)}
+        onChange={(size: number) => savePaneSize(uid, 'left', size)}
+        style={{ flex: 1, position: 'relative' }}
+      >
+        <Box sx={{ ...panelSx, gap: 0.5, p: 0.5 }}>
+          <Box sx={{ flex: '1 1 auto', overflow: 'hidden' }}>
+            <DialerPanel
+              agentId={agentId}
+              initialPhone={initialPhone}
+              activeCallSid={activeCallSid}
+              isCallActive={isCallActive}
+              activePhone={activePhone}
+              onCallStarted={handleCallStarted}
+              onCallEnded={handleCallEnded}
+              historySelection={historySelection}
+            />
+          </Box>
+          <Box sx={{ flex: '0 0 auto', overflow: 'auto', maxHeight: '50%' }}>
+            <CostPanel callDuration={callDuration} isCallActive={isCallActive} />
+          </Box>
         </Box>
         {/* @ts-expect-error react-split-pane types mismatch with React 18 */}
-        <SplitPane split="vertical" minSize={300} maxSize={-300} defaultSize="65%" style={{ position: 'relative' }}>
-          <Box sx={panelSx}>
+        <SplitPane
+          split="vertical"
+          minSize={300}
+          maxSize={-300}
+          defaultSize={loadPaneSize(uid, 'right', '65%')}
+          onChange={(size: number) => savePaneSize(uid, 'right', size)}
+          style={{ position: 'relative' }}
+        >
+          <Box sx={{ ...panelSx, p: 0.5 }}>
             <CallLogsPanelCard onSelectLog={handleSelectLog} />
           </Box>
-          <Box sx={panelSx}>
+          <Box sx={{ ...panelSx, p: 0.5 }}>
             <ChatPanel events={events} isActive={isCallActive} />
           </Box>
         </SplitPane>

@@ -73,7 +73,7 @@ const ContactsTab = () => {
   };
 
   const handleCall = (phone: string) => {
-    if (phone) navigate(`/dashboard?phone=${encodeURIComponent(phone)}`);
+    if (phone) navigate(`/call?phone=${encodeURIComponent(phone)}`);
   };
 
   const handleDialogClose = (saved?: boolean) => {

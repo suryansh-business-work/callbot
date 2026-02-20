@@ -1,9 +1,16 @@
 import Agent, { IAgent } from './agents.models';
 import { CreateAgentInput, UpdateAgentInput, AgentListQueryInput } from './agents.validators';
 import { escapeRegex } from '../utils/regex';
+import { startSchedule, stopSchedule } from './agents.scheduler';
 
 export const createAgent = async (userId: string, data: CreateAgentInput): Promise<IAgent> => {
   const agent = await Agent.create({ userId, ...data });
+
+  // Start schedule if configured and active
+  if (data.schedule?.isActive && data.schedule?.cronExpression) {
+    startSchedule(agent._id.toString(), data.schedule.cronExpression);
+  }
+
   return agent;
 };
 
@@ -22,7 +29,8 @@ export const getAgents = async (
     Agent.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
-      .limit(pageSize),
+      .limit(pageSize)
+      .populate('schedule.contactIds', 'firstName lastName phone'),
     Agent.countDocuments(filter),
   ]);
 
@@ -30,7 +38,7 @@ export const getAgents = async (
 };
 
 export const getAgentById = async (userId: string, agentId: string): Promise<IAgent | null> => {
-  return Agent.findOne({ _id: agentId, userId });
+  return Agent.findOne({ _id: agentId, userId }).populate('schedule.contactIds', 'firstName lastName phone');
 };
 
 export const updateAgent = async (
@@ -38,10 +46,23 @@ export const updateAgent = async (
   agentId: string,
   data: UpdateAgentInput
 ): Promise<IAgent | null> => {
-  return Agent.findOneAndUpdate({ _id: agentId, userId }, data, { returnDocument: 'after', runValidators: true });
+  const agent = await Agent.findOneAndUpdate({ _id: agentId, userId }, data, { returnDocument: 'after', runValidators: true });
+
+  // Manage schedule based on update
+  if (agent && data.schedule) {
+    if (data.schedule.isActive && data.schedule.cronExpression) {
+      startSchedule(agentId, data.schedule.cronExpression);
+    } else {
+      stopSchedule(agentId);
+    }
+  }
+
+  return agent;
 };
 
 export const deleteAgent = async (userId: string, agentId: string): Promise<boolean> => {
+  // Stop any active schedule before deleting
+  stopSchedule(agentId);
   const result = await Agent.findOneAndDelete({ _id: agentId, userId });
   return !!result;
 };

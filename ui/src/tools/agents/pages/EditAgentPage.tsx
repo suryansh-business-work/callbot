@@ -6,6 +6,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { useFormik } from 'formik';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -15,6 +17,7 @@ import { createAgentValidationSchema } from '../agents.validation';
 import { fetchAgentById, updateAgentApi } from '../agents.api';
 import VoiceSelector from '../../voices/VoiceSelector';
 import AgentPhotoUpload from '../components/AgentPhotoUpload';
+import ScheduleSection from '../components/ScheduleSection';
 
 const breadcrumbItems = [
   { label: 'Home', href: '/dashboard' },
@@ -30,7 +33,11 @@ const EditAgentPage = () => {
   const [agentImage, setAgentImage] = useState<string | null>(null);
 
   const formik = useFormik({
-    initialValues: { name: '', voice: 'Polly.Joanna-Neural', greeting: '', systemPrompt: '' },
+    initialValues: {
+      name: '', voice: 'Polly.Joanna-Neural', greeting: '', systemPrompt: '',
+      schedule: { cronExpression: '', contactIds: [] as string[], isActive: false },
+      allowScheduling: true,
+    },
     validationSchema: createAgentValidationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
@@ -58,13 +65,24 @@ const EditAgentPage = () => {
       try {
         const res = await fetchAgentById(agentId);
         if (res.success && res.data) {
+          const agentData = res.data;
+          // Extract contact IDs from populated or plain array
+          const contactIds = (agentData.schedule?.contactIds || []).map((c) =>
+            typeof c === 'string' ? c : c._id
+          );
           formik.setValues({
-            name: res.data.name,
-            voice: res.data.voice,
-            greeting: res.data.greeting || '',
-            systemPrompt: res.data.systemPrompt,
+            name: agentData.name,
+            voice: agentData.voice,
+            greeting: agentData.greeting || '',
+            systemPrompt: agentData.systemPrompt,
+            schedule: {
+              cronExpression: agentData.schedule?.cronExpression || '',
+              contactIds,
+              isActive: agentData.schedule?.isActive || false,
+            },
+            allowScheduling: agentData.allowScheduling !== false,
           });
-          setAgentImage(res.data.image || null);
+          setAgentImage(agentData.image || null);
         } else {
           toast.error('Agent not found');
           navigate('/agents');
@@ -148,6 +166,28 @@ const EditAgentPage = () => {
                   disabled={loading}
                 />
               </Box>
+
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <ScheduleSection formik={formik as any} disabled={loading} />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formik.values.allowScheduling}
+                    onChange={(e) => formik.setFieldValue('allowScheduling', e.target.checked)}
+                    disabled={loading}
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>Allow Scheduling</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Let this agent be used for scheduled / callback calls
+                    </Typography>
+                  </Box>
+                }
+                sx={{ ml: 0, alignItems: 'flex-start' }}
+              />
 
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button variant="outlined" onClick={() => navigate('/agents')} disabled={loading}>Cancel</Button>

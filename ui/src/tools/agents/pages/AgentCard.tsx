@@ -13,6 +13,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PhoneForwardedIcon from '@mui/icons-material/PhoneForwarded';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Agent } from '../agents.types';
 
 interface AgentCardProps {
@@ -91,17 +92,31 @@ const AgentCard = ({ agent, onSelect, onEdit, onDelete }: AgentCardProps) => {
         </Typography>
 
         {/* Meta */}
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'text.secondary',
-            fontSize: '0.65rem',
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Created {new Date(agent.createdAt).toLocaleDateString()}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.65rem',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Created {new Date(agent.createdAt).toLocaleDateString()}
+          </Typography>
+          {agent.schedule?.isActive && (
+            <Tooltip title={`Scheduled: ${agent.schedule.cronExpression}`}>
+              <Chip
+                icon={<ScheduleIcon sx={{ fontSize: 12 }} />}
+                label="Scheduled"
+                size="small"
+                color="success"
+                variant="outlined"
+                sx={{ height: 18, fontSize: '0.6rem', fontWeight: 600 }}
+              />
+            </Tooltip>
+          )}
+        </Box>
       </CardContent>
 
       <CardActions sx={{ justifyContent: 'space-between', px: 2.5, pb: 2, pt: 0 }}>

@@ -51,3 +51,55 @@ export const getResolvedConfig = async (req: AuthRequest, res: Response): Promis
     res.status(500).json({ success: false, message: msg });
   }
 };
+
+/**
+ * POST /api/settings/validate/twilio - Validate Twilio credentials and get balance
+ */
+export const validateTwilio = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const result = await settingsService.validateTwilio(req.userId!);
+    res.status(200).json({ success: true, data: result });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Validation failed';
+    res.status(500).json({ success: false, message: msg });
+  }
+};
+
+/**
+ * POST /api/settings/validate/openai - Validate OpenAI API key
+ */
+export const validateOpenAi = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const result = await settingsService.validateOpenAi(req.userId!);
+    res.status(200).json({ success: true, data: result });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Validation failed';
+    res.status(500).json({ success: false, message: msg });
+  }
+};
+
+/**
+ * POST /api/settings/validate/sarvam - Validate Sarvam API key
+ */
+export const validateSarvam = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const result = await settingsService.validateSarvam(req.userId!);
+    res.status(200).json({ success: true, data: result });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Validation failed';
+    res.status(500).json({ success: false, message: msg });
+  }
+};
+
+/**
+ * GET /api/settings/credits - Get all service credits/balances
+ */
+export const getCredits = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const credits = await settingsService.getCreditsInfo(req.userId!);
+    res.status(200).json({ success: true, data: credits });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Failed to fetch credits';
+    res.status(500).json({ success: false, message: msg });
+  }
+};

@@ -4,6 +4,8 @@ import { envConfig } from './config';
 import { connectDB } from './config/db';
 import { initSocketIO } from './websocket';
 import { startTunnel, getTunnelUrl } from './tunnel';
+import { initAllSchedules, stopAllSchedules } from './agents/agents.scheduler';
+import { initRecurringScheduledCalls, stopAllRecurringTasks, processPendingScheduledCalls } from './scheduledcalls/scheduledcalls.services';
 
 const start = async () => {
   try {
@@ -44,6 +46,17 @@ const start = async () => {
           console.warn('[Tunnel] Ensure cloudflared is installed: npm install -g cloudflared');
         }
       }
+
+      // Initialize agent CRON schedules
+      await initAllSchedules();
+      await initRecurringScheduledCalls();
+
+      // Check for pending scheduled calls every 30 seconds
+      setInterval(() => {
+        processPendingScheduledCalls().catch((err) =>
+          console.error('[ScheduledCalls] Process error:', err)
+        );
+      }, 30_000);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
@@ -55,6 +68,8 @@ const start = async () => {
 process.on('SIGINT', () => {
   const { stopTunnel } = require('./tunnel');
   stopTunnel();
+  stopAllSchedules();
+  stopAllRecurringTasks();
   process.exit(0);
 });
 

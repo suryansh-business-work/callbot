@@ -11,6 +11,7 @@ import companiesRoutes from './companies/companies.routes';
 import contactsRoutes from './contacts/contacts.routes';
 import promptLibraryRoutes from './promptlibrary/promptlibrary.routes';
 import settingsRoutes from './settings/settings.routes';
+import scheduledCallsRoutes from './scheduledcalls/scheduledcalls.routes';
 
 const app = express();
 
@@ -47,5 +48,6 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/tts', ttsRoutes);
 app.use('/api/prompts', promptLibraryRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/scheduled-calls', scheduledCallsRoutes);
 
 export default app;

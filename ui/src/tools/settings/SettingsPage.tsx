@@ -128,7 +128,7 @@ const SettingsPage = () => {
             onChange={(_, v) => setVerticalTab(v)}
             sx={{
               borderRight: 1, borderColor: 'divider', minWidth: 160,
-              '& .MuiTab-root': { alignItems: 'flex-start', textAlign: 'left', fontSize: '0.78rem', minHeight: 48, px: 2 },
+              '& .MuiTab-root': { alignItems: 'center', textAlign: 'left', fontSize: '0.78rem', minHeight: 48, px: 2 },
             }}
           >
             {VERTICAL_TABS.map((tab) => (

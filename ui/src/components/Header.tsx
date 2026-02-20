@@ -24,6 +24,7 @@ import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useThemeMode } from '../context/ThemeContext';
@@ -51,6 +52,7 @@ const Header = () => {
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon sx={{ fontSize: 18 }} /> },
     { label: 'Agents', path: '/agents', icon: <SmartToyIcon sx={{ fontSize: 18 }} /> },
     { label: 'Contacts', path: '/contacts', icon: <BusinessIcon sx={{ fontSize: 18 }} /> },
+    { label: 'Scheduler', path: '/scheduler', icon: <ScheduleIcon sx={{ fontSize: 18 }} /> },
     { label: 'Prompts', path: '/prompt-library', icon: <LibraryBooksIcon sx={{ fontSize: 18 }} /> },
   ];
 
@@ -92,7 +94,7 @@ const Header = () => {
           >
             <HeadsetMicIcon sx={{ fontSize: 18 }} />
           </Box>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Box sx={{ display: { xs: 'none', sm: 'flex', flexDirection: 'column', justifyContent: 'center' } }}>
             <Typography
               variant="subtitle2"
               sx={{
@@ -100,13 +102,13 @@ const Header = () => {
                 fontSize: '0.78rem',
                 letterSpacing: '0.06em',
                 color: 'text.primary',
-                lineHeight: 1,
+                lineHeight: 1.2,
               }}
             >
-              EXYCONN
+              Auto
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6rem', letterSpacing: '0.04em' }}>
-              CALL CENTER
+              Calling Agents
             </Typography>
           </Box>
         </Box>

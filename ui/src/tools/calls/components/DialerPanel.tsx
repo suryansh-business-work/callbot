@@ -24,6 +24,7 @@ interface HistorySelection {
 
 interface DialerPanelProps {
   agentId?: string;
+  initialPhone?: string;
   activeCallSid: string | null;
   isCallActive: boolean;
   activePhone: string;
@@ -32,7 +33,7 @@ interface DialerPanelProps {
   historySelection?: HistorySelection | null;
 }
 
-const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCallStarted, onCallEnded, historySelection }: DialerPanelProps) => {
+const DialerPanel = ({ agentId, initialPhone, activeCallSid, isCallActive, activePhone, onCallStarted, onCallEnded, historySelection }: DialerPanelProps) => {
   const [loading, setLoading] = useState(false);
   const [voiceDialogOpen, setVoiceDialogOpen] = useState(false);
   const { language: globalLanguage } = useVoice();
@@ -100,6 +101,14 @@ const DialerPanel = ({ agentId, activeCallSid, isCallActive, activePhone, onCall
     loadAgent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agentId]);
+
+  // Pre-fill phone from URL param (e.g. from contact list)
+  useEffect(() => {
+    if (initialPhone) {
+      formik.setFieldValue('to', initialPhone);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPhone]);
 
   // Apply history selection
   useEffect(() => {

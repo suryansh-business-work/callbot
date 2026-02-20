@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { useFormik } from 'formik';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +15,7 @@ import AppBreadcrumb from '../../../components/AppBreadcrumb';
 import { createAgentValidationSchema, createAgentInitialValues } from '../agents.validation';
 import { createAgentApi } from '../agents.api';
 import VoiceSelector from '../../voices/VoiceSelector';
+import ScheduleSection from '../components/ScheduleSection';
 
 const breadcrumbItems = [
   { label: 'Home', href: '/dashboard' },
@@ -89,6 +92,28 @@ const CreateAgentPage = () => {
                   disabled={loading}
                 />
               </Box>
+
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              <ScheduleSection formik={formik as any} disabled={loading} />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formik.values.allowScheduling}
+                    onChange={(e) => formik.setFieldValue('allowScheduling', e.target.checked)}
+                    disabled={loading}
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>Allow Scheduling</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Let this agent be used for scheduled / callback calls
+                    </Typography>
+                  </Box>
+                }
+                sx={{ ml: 0, alignItems: 'flex-start' }}
+              />
 
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button variant="outlined" onClick={() => navigate('/agents')} disabled={loading}>Cancel</Button>

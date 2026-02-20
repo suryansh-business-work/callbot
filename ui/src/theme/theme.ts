@@ -66,7 +66,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       button: { fontWeight: 600, letterSpacing: '0.03em' },
       caption: { fontSize: '0.72rem', letterSpacing: '0.02em' },
     },
-    shape: { borderRadius: 0 },
+    shape: { borderRadius: 4 },
     components: {
       /* ── Global baseline ─────────────────────────────────── */
       MuiCssBaseline: {
@@ -97,7 +97,7 @@ export const createAppTheme = (mode: PaletteMode) => {
           root: {
             textTransform: 'none',
             fontWeight: 600,
-            borderRadius: 0,
+            borderRadius: 4,
             padding: '8px 22px',
             fontSize: '0.85rem',
             position: 'relative' as const,
@@ -129,7 +129,7 @@ export const createAppTheme = (mode: PaletteMode) => {
         defaultProps: { elevation: 0 },
         styleOverrides: {
           root: {
-            borderRadius: 0,
+            borderRadius: 4,
             border: `1px solid ${c.border}`,
             backgroundImage: 'none',
             backgroundColor: c.paper,
@@ -145,7 +145,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       /* ── Paper ───────────────────────────────────────────── */
       MuiPaper: {
         styleOverrides: {
-          root: { borderRadius: 0, backgroundImage: 'none' },
+          root: { borderRadius: 4, backgroundImage: 'none' },
         },
       },
 
@@ -155,7 +155,7 @@ export const createAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             '& .MuiOutlinedInput-root': {
-              borderRadius: 0,
+              borderRadius: 4,
               backgroundColor: mode === 'light' ? '#fff' : alpha(c.surface, 0.6),
               transition: 'box-shadow 0.2s ease',
               '& fieldset': { borderColor: c.border, transition: 'border-color 0.2s ease' },
@@ -172,7 +172,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       MuiChip: {
         styleOverrides: {
           root: {
-            borderRadius: 0,
+            borderRadius: 4,
             fontWeight: 500,
             fontSize: '0.72rem',
             letterSpacing: '0.02em',
@@ -223,7 +223,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            borderRadius: 0,
+            borderRadius: 4,
             border: `1px solid ${c.border}`,
             backgroundImage: 'none',
             boxShadow: glowShadow(c.primary, 0.1),
@@ -235,7 +235,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       MuiMenu: {
         styleOverrides: {
           paper: {
-            borderRadius: 0,
+            borderRadius: 4,
             border: `1px solid ${c.border}`,
             backgroundImage: 'none',
             boxShadow: `0 8px 32px ${alpha('#000', 0.15)}`,
@@ -257,32 +257,32 @@ export const createAppTheme = (mode: PaletteMode) => {
       },
       MuiTabs: {
         styleOverrides: {
-          indicator: { height: 2, borderRadius: 0 },
+          indicator: { height: 2, borderRadius: 4 },
         },
       },
 
       /* ── Alert ───────────────────────────────────────────── */
       MuiAlert: {
         styleOverrides: {
-          root: { borderRadius: 0, border: '1px solid' },
+          root: { borderRadius: 4, border: '1px solid' },
         },
       },
 
       /* ── Avatar ──────────────────────────────────────────── */
       MuiAvatar: {
-        styleOverrides: { root: { borderRadius: 0 } },
+        styleOverrides: { root: { borderRadius: 4 } },
       },
 
       /* ── Skeleton ────────────────────────────────────────── */
       MuiSkeleton: {
-        styleOverrides: { root: { borderRadius: 0 } },
+        styleOverrides: { root: { borderRadius: 4 } },
       },
 
       /* ── Tooltip ─────────────────────────────────────────── */
       MuiTooltip: {
         styleOverrides: {
           tooltip: {
-            borderRadius: 0,
+            borderRadius: 4,
             fontSize: '0.72rem',
             fontWeight: 500,
             backgroundColor: mode === 'dark' ? c.surface : c.textPrimary,
@@ -304,7 +304,7 @@ export const createAppTheme = (mode: PaletteMode) => {
       MuiIconButton: {
         styleOverrides: {
           root: {
-            borderRadius: 0,
+            borderRadius: 4,
             transition: 'all 0.2s ease',
             '&:hover': {
               backgroundColor: alpha(c.primary, 0.08),

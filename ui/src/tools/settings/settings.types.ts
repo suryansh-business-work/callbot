@@ -34,3 +34,56 @@ export interface UpdateSettingsPayload {
   aiConfig?: Partial<AiConfig>;
   ttsConfig?: Partial<TtsConfig>;
 }
+
+/* ─── Validation response types ─────────────────────────────────── */
+export interface TwilioValidation {
+  valid: boolean;
+  balance?: string;
+  currency?: string;
+  message?: string;
+}
+
+export interface OpenAiValidation {
+  valid: boolean;
+  message?: string;
+}
+
+export interface SarvamValidation {
+  valid: boolean;
+  credits?: number;
+  message?: string;
+}
+
+export interface ValidationResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+/* ─── Credits/Balance info ──────────────────────────────────────── */
+export interface CreditsInfo {
+  twilio: {
+    configured: boolean;
+    balance?: string;
+    currency?: string;
+    phoneNumber?: string;
+  };
+  openai: {
+    configured: boolean;
+    valid?: boolean;
+  };
+  sarvam: {
+    configured: boolean;
+    valid?: boolean;
+  };
+  estimatedCostPerMinute: {
+    twilio: number;
+    openai: number;
+    sarvam: number;
+    total: number;
+  };
+}
+
+export interface CreditsResponse {
+  success: boolean;
+  data: CreditsInfo;
+}

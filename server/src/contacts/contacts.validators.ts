@@ -24,7 +24,7 @@ export const updateContactSchema = z.object({
 
 export const contactListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).optional().default(1),
-  pageSize: z.coerce.number().int().min(1).max(100).optional().default(20),
+  pageSize: z.coerce.number().int().min(1).max(500).optional().default(20),
   search: z.string().optional(),
   companyId: z.string().optional(),
   tag: z.string().optional(),

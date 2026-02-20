@@ -1,3 +1,18 @@
+export interface ScheduleContact {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+export interface AgentSchedule {
+  cronExpression: string;
+  contactIds: (string | ScheduleContact)[];
+  isActive: boolean;
+  lastRunAt: string | null;
+  nextRunAt: string | null;
+}
+
 export interface Agent {
   _id: string;
   userId: string;
@@ -6,6 +21,8 @@ export interface Agent {
   voice: string;
   greeting: string;
   image: string | null;
+  schedule: AgentSchedule;
+  allowScheduling: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,11 +43,19 @@ export interface AgentResponse {
   data?: Agent;
 }
 
+export interface SchedulePayload {
+  cronExpression?: string;
+  contactIds?: string[];
+  isActive?: boolean;
+}
+
 export interface CreateAgentPayload {
   name: string;
   systemPrompt: string;
   voice?: string;
   greeting?: string;
+  schedule?: SchedulePayload;
+  allowScheduling?: boolean;
 }
 
 export interface UpdateAgentPayload {
@@ -38,4 +63,6 @@ export interface UpdateAgentPayload {
   systemPrompt?: string;
   voice?: string;
   greeting?: string;
+  schedule?: SchedulePayload;
+  allowScheduling?: boolean;
 }
