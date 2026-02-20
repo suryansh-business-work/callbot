@@ -14,6 +14,7 @@ import settingsRoutes from './settings/settings.routes';
 import scheduledCallsRoutes from './scheduledcalls/scheduledcalls.routes';
 import emailsRoutes from './emails/emails.routes';
 import streamingRoutes from './streaming/streaming.routes';
+import openApiRoutes from './openapi/openapi.routes';
 
 const app = express();
 
@@ -53,5 +54,6 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/scheduled-calls', scheduledCallsRoutes);
 app.use('/api/emails', emailsRoutes);
 app.use('/api/ai/stream', streamingRoutes);
+app.use('/api/v1', openApiRoutes);
 
 export default app;

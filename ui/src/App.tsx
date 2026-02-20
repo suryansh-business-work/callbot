@@ -24,6 +24,7 @@ import PromptLibraryPage from './tools/promptlibrary/pages/PromptLibraryPage';
 import SettingsPage from './tools/settings/SettingsPage';
 import SchedulerPage from './tools/scheduler/SchedulerPage';
 import ContactDetailPage from './tools/contacts/ContactDetailPage';
+import ApiDocsPage from './tools/apidocs/ApiDocsPage';
 
 const App = () => {
   return (
@@ -58,6 +59,7 @@ const App = () => {
                   <Route path="/contacts/:contactId" element={<ProtectedRoute><ContactDetailPage /></ProtectedRoute>} />
                   <Route path="/scheduler" element={<ProtectedRoute><SchedulerPage /></ProtectedRoute>} />
                   <Route path="/prompt-library" element={<ProtectedRoute><PromptLibraryPage /></ProtectedRoute>} />
+                  <Route path="/api-docs" element={<ProtectedRoute><ApiDocsPage /></ProtectedRoute>} />
 
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />

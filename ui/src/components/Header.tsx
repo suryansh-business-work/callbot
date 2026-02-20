@@ -30,6 +30,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import MenuIcon from '@mui/icons-material/Menu';
+import ApiIcon from '@mui/icons-material/Api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useThemeMode } from '../context/ThemeContext';
@@ -42,6 +43,7 @@ const NAV_ITEMS = [
   { label: 'Contacts', path: '/contacts', icon: <BusinessIcon sx={{ fontSize: 18 }} /> },
   { label: 'Scheduler', path: '/scheduler', icon: <ScheduleIcon sx={{ fontSize: 18 }} /> },
   { label: 'Prompts', path: '/prompt-library', icon: <LibraryBooksIcon sx={{ fontSize: 18 }} /> },
+  { label: 'API Docs', path: '/api-docs', icon: <ApiIcon sx={{ fontSize: 18 }} /> },
 ];
 
 const Header = () => {
