@@ -330,10 +330,13 @@ jobs:
             sleep 10
             docker compose -f docker-compose.prod.yml ps
 
-            # ── SSL via Certbot (idempotent) ───────────────────────
+            # ── SSL via Certbot (non-fatal) ────────────────────────
             if ! command -v certbot &> /dev/null; then
               apt-get update -qq && apt-get install -y -qq certbot python3-certbot-nginx
             fi
+
+            SSL_EMAIL="${{ secrets.SSL_EMAIL }}"
+            SSL_EMAIL="${SSL_EMAIL:-suryanshbusinesswork@gmail.com}"
 
             certbot --nginx \
               -d voxeia.com -d www.voxeia.com \
@@ -342,13 +345,13 @@ jobs:
               -d ws.voxeia.com \
               -d ecomm.voxeia.com \
               --non-interactive --agree-tos \
-              -m ${{ secrets.SSL_EMAIL }} \
+              -m "$SSL_EMAIL" \
               --redirect \
-              --keep-until-expiring
+              --keep-until-expiring || echo "⚠️  Certbot failed — SSL may need manual setup"
 
             nginx -t && systemctl reload nginx
 
             # ── Cleanup ────────────────────────────────────────────
             docker image prune -f
 
-            echo "✅ Full deployment complete with SSL!"
+            echo "✅ Full deployment complete!"
