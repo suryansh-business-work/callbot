@@ -16,7 +16,9 @@ RUN npm ci --omit=dev
 
 # Copy built output
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/data ./data
+
+# Create data directory
+RUN mkdir -p ./data
 
 # Expose API and WebSocket ports
 EXPOSE 9004 9005
