@@ -1,0 +1,249 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const features = [
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
+    title: 'Lightning Fast Setup',
+    description:
+      'Get started in minutes, not days. Our intuitive dashboard lets you configure AI calling campaigns with zero technical knowledge.',
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`,
+    title: 'Real-time Analytics',
+    description:
+      'Monitor call performance, conversion rates, and customer sentiment in real-time with our comprehensive analytics dashboard.',
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>`,
+    title: 'Fully Customizable',
+    description:
+      'Tailor AI voice, scripts, and conversation flows to match your brand. Supports multiple languages and regional accents.',
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`,
+    title: 'Lead Qualification',
+    description:
+      'AI automatically qualifies leads based on conversation context, saving your sales team hours of manual follow-ups.',
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>`,
+    title: 'Enterprise Security',
+    description:
+      "Bank-grade encryption, SOC 2 compliance, and GDPR ready. Your data and your customers' data stays safe.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>`,
+    title: 'Auto Retries & Scheduling',
+    description:
+      'Smart retry logic and advanced scheduling ensures maximum contact rates. Never miss an opportunity again.',
+  },
+];
+
+const stats = [
+  { value: '10M+', label: 'Calls Made' },
+  { value: '98.5%', label: 'Uptime SLA' },
+  { value: '500+', label: 'Happy Clients' },
+  { value: '45%', label: 'Cost Savings' },
+];
+---
+
+<Layout title="Home">
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 gradient-mesh">
+    <!-- Background Effects -->
+    <div class="absolute inset-0">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[128px] animate-pulse"></div>
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[128px] animate-pulse"
+        style="animation-delay: 1s;"
+      >
+      </div>
+    </div>
+
+    <!-- Grid Pattern -->
+    <div
+      class="absolute inset-0 opacity-[0.04]"
+      style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 64px 64px;"
+    >
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 mb-8">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-sm text-text-muted font-medium">Now with GPT-4 Powered Conversations</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-text">
+        <span class="block">Automate Your</span>
+        <span
+          class="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent bg-[length:200%_100%] animate-[shimmer_3s_ease-in-out_infinite]"
+        >
+          Business Calls
+        </span>
+        <span class="block">With AI</span>
+      </h1>
+
+      <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-text-muted leading-relaxed">
+        Revolutionize your outbound calling with intelligent AI agents. Qualify leads, book appointments, and close
+        deals — all on autopilot.
+      </p>
+
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/pricing"
+          class="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary to-secondary rounded-full hover:shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-1"
+        >
+          Start Free Trial
+        </a>
+        <a
+          href="/about"
+          class="w-full sm:w-auto px-8 py-4 text-base font-semibold text-text bg-surface border border-border rounded-full hover:border-primary/30 hover:shadow-lg transition-all"
+        >
+          Learn More →
+        </a>
+      </div>
+
+      <!-- Starting Price -->
+      <p class="mt-6 text-sm text-text-muted">
+        Starting at just <span class="text-primary font-bold">₹5.99/min</span> (~$0.07/min) · No setup fees · Cancel anytime
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="relative py-20 border-y border-border bg-surface-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {
+          stats.map((stat) => (
+            <div class="text-center">
+              <div class="text-3xl sm:text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {stat.value}
+              </div>
+              <p class="mt-2 text-sm text-text-muted">{stat.label}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="relative py-24 sm:py-32">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-sm font-semibold text-primary uppercase tracking-wider">Features</span>
+        <h2 class="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-text">
+          Everything you need to <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            >scale calls</span
+          >
+        </h2>
+        <p class="mt-4 text-text-muted text-lg">
+          Powerful features designed to help businesses of all sizes automate their calling operations.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          features.map((feature) => (
+            <div class="group relative p-8 rounded-2xl bg-surface border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-primary mb-5 group-hover:scale-110 transition-transform">
+                <Fragment set:html={feature.icon} />
+              </div>
+              <h3 class="text-xl font-semibold text-text mb-3">{feature.title}</h3>
+              <p class="text-text-muted leading-relaxed">{feature.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works -->
+  <section class="relative py-24 sm:py-32 bg-surface-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-sm font-semibold text-primary uppercase tracking-wider">How It Works</span>
+        <h2 class="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-text">
+          Three simple steps to <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            >get started</span
+          >
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="relative text-center p-8">
+          <div
+            class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-black text-white mb-6 shadow-lg shadow-primary/20"
+          >
+            1
+          </div>
+          <h3 class="text-xl font-semibold text-text mb-3">Upload Contacts</h3>
+          <p class="text-text-muted">
+            Import your contact list via CSV or connect your CRM. We support all major platforms.
+          </p>
+        </div>
+        <div class="relative text-center p-8">
+          <div
+            class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-black text-white mb-6 shadow-lg shadow-primary/20"
+          >
+            2
+          </div>
+          <h3 class="text-xl font-semibold text-text mb-3">Configure AI Agent</h3>
+          <p class="text-text-muted">
+            Set up your AI voice, conversation script, and goals. Our templates make it easy.
+          </p>
+        </div>
+        <div class="relative text-center p-8">
+          <div
+            class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-black text-white mb-6 shadow-lg shadow-primary/20"
+          >
+            3
+          </div>
+          <h3 class="text-xl font-semibold text-text mb-3">Launch & Monitor</h3>
+          <p class="text-text-muted">Start your campaign and monitor results in real-time. AI handles the rest.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="relative py-24 sm:py-32 overflow-hidden gradient-mesh">
+    <div class="absolute inset-0">
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[128px]"
+      >
+      </div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-text mb-6">
+        Ready to transform your <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+          >calling operations?</span
+        >
+      </h2>
+      <p class="text-text-muted text-lg mb-10 max-w-2xl mx-auto">
+        Join 500+ businesses already using CallBotAI to automate their outreach. Start your free trial today.
+      </p>
+      <a
+        href="/contact"
+        class="inline-block px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary to-secondary rounded-full hover:shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-1"
+      >
+        Get Started for Free
+      </a>
+    </div>
+  </section>
+
+  <style>
+    @keyframes shimmer {
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+  </style>
+</Layout>

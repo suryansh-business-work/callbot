@@ -1,0 +1,72 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 148.135.136.107
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            APP_DIR=/root/voxeia
+
+            # ── Clone or pull latest code ──────────────────────────
+            if [ ! -d "$APP_DIR" ]; then
+              git clone ${{ secrets.REPO_URL }} "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+            git fetch origin main
+            git reset --hard origin/main
+
+            # ── Write production .env for server ───────────────────
+            cat > server/.env << 'ENVEOF'
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}
+            TWILIO_PHONE_NUMBER=${{ secrets.TWILIO_PHONE_NUMBER }}
+            PORT=9004
+            WS_PORT=9005
+            NODE_ENV=production
+            CLIENT_URL=https://app.voxeia.com
+            BASE_URL=https://api.voxeia.com
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            AI_SYSTEM_PROMPT=${{ secrets.AI_SYSTEM_PROMPT }}
+            MONGODB_URI=mongodb://mongo:27017/voxeia
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=7d
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_PORT=${{ secrets.SMTP_PORT }}
+            SMTP_USER=${{ secrets.SMTP_USER }}
+            SMTP_PASS=${{ secrets.SMTP_PASS }}
+            SMTP_FROM=${{ secrets.SMTP_FROM }}
+            IMAGEKIT_PUBLIC_KEY=${{ secrets.IMAGEKIT_PUBLIC_KEY }}
+            IMAGEKIT_PRIVATE_KEY=${{ secrets.IMAGEKIT_PRIVATE_KEY }}
+            IMAGEKIT_URL_ENDPOINT=${{ secrets.IMAGEKIT_URL_ENDPOINT }}
+            SARVAM_API_KEY=${{ secrets.SARVAM_API_KEY }}
+            ENVEOF
+
+            # Trim leading whitespace from .env
+            sed -i 's/^[[:space:]]*//' server/.env
+
+            # ── Build & deploy with Docker Compose ─────────────────
+            docker compose -f docker-compose.prod.yml down --remove-orphans
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d
+
+            # ── Prune old images ───────────────────────────────────
+            docker image prune -f
+
+            echo "✅ Deployment complete!"

@@ -1,0 +1,218 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const useCases = [
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+    title: 'Travel & Hospitality',
+    subtitle: 'Automate bookings & confirmations',
+    description:
+      'AI agents handle booking confirmations, itinerary changes, flight reminders, hotel check-in calls, and travel plan follow-ups — across time zones, 24/7.',
+    benefits: [
+      'Automated booking confirmations',
+      'Flight & hotel reminders',
+      'Multi-timezone support',
+      'Multi-language calling',
+    ],
+    metric: '3x',
+    metricLabel: 'Faster booking confirmations',
+    gradient: 'from-blue-500 to-cyan-400',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>`,
+    title: 'E-Commerce & Cart Recovery',
+    subtitle: 'Recover abandoned carts with calls',
+    description:
+      'Reach customers who abandoned carts with personalized AI calls. Offer incentives, answer questions, and close sales that would otherwise be lost.',
+    benefits: [
+      'Abandoned cart follow-ups',
+      'Order status notifications',
+      'Upsell & cross-sell calls',
+      'Return & refund handling',
+    ],
+    metric: '35%',
+    metricLabel: 'Cart recovery rate',
+    gradient: 'from-purple-500 to-pink-500',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`,
+    title: 'Real Estate',
+    subtitle: 'Qualify leads & schedule viewings',
+    description:
+      'AI calls prospective buyers and tenants to qualify interest, schedule property viewings, and follow up after tours — saving agents hours daily.',
+    benefits: [
+      'Lead qualification calls',
+      'Property viewing scheduling',
+      'Post-tour follow-ups',
+      'Rent collection reminders',
+    ],
+    metric: '60%',
+    metricLabel: 'Time saved per agent',
+    gradient: 'from-emerald-500 to-teal-500',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>`,
+    title: 'Healthcare',
+    subtitle: 'Appointment reminders & follow-ups',
+    description:
+      'Reduce no-shows with automated appointment reminders. Handle prescription refill calls, post-visit surveys, and patient follow-ups at scale.',
+    benefits: [
+      'Appointment reminders',
+      'Prescription refill alerts',
+      'Post-visit satisfaction calls',
+      'Insurance verification',
+    ],
+    metric: '40%',
+    metricLabel: 'Reduction in no-shows',
+    gradient: 'from-red-500 to-orange-500',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+    title: 'Financial Services',
+    subtitle: 'Collections & payment reminders',
+    description:
+      'Automate payment reminders, loan follow-ups, and collections calls with empathetic AI that maintains compliance and professionalism.',
+    benefits: ['Payment due reminders', 'Loan offer follow-ups', 'Debt collection calls', 'KYC verification calls'],
+    metric: '25%',
+    metricLabel: 'Improvement in collection rates',
+    gradient: 'from-amber-500 to-yellow-500',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`,
+    title: 'Education',
+    subtitle: 'Enrollment & student engagement',
+    description:
+      'Drive enrollments with personalized outreach calls. Handle admission inquiries, course reminders, fee follow-ups, and alumni engagement.',
+    benefits: ['Enrollment outreach', 'Admission inquiry handling', 'Fee payment reminders', 'Course feedback surveys'],
+    metric: '50%',
+    metricLabel: 'Increase in enrollment rate',
+    gradient: 'from-indigo-500 to-violet-500',
+  },
+];
+---
+
+<Layout
+  title="Use Cases"
+  description="Discover how businesses across industries use CallBotAI to automate their calling operations."
+>
+  <!-- Hero -->
+  <section class="relative pt-32 pb-16 overflow-hidden gradient-mesh">
+    <div
+      class="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-[100px]"
+    >
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 mb-6">
+        <span class="text-sm font-medium text-primary">Industry Solutions</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black leading-tight">
+        AI Calling for <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+          >Every Industry</span
+        >
+      </h1>
+      <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+        From travel bookings to cart recovery, healthcare to finance — see how CallBotAI transforms business
+        communication across sectors.
+      </p>
+    </div>
+  </section>
+
+  <!-- Use Cases Grid -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="space-y-20">
+        {
+          useCases.map((uc, idx) => (
+            <div
+              class:list={[
+                'grid grid-cols-1 lg:grid-cols-2 gap-12 items-center',
+                idx % 2 === 1 && 'lg:flex-row-reverse',
+              ]}
+            >
+              <div class:list={[idx % 2 === 1 && 'lg:order-2']}>
+                <div
+                  class:list={[
+                    'inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br text-white mb-6',
+                    uc.gradient,
+                  ]}
+                >
+                  <Fragment set:html={uc.icon} />
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-text mb-2">{uc.title}</h2>
+                <p class="text-primary font-medium mb-4">{uc.subtitle}</p>
+                <p class="text-text-muted leading-relaxed mb-6">{uc.description}</p>
+                <ul class="space-y-3 mb-8">
+                  {uc.benefits.map((b) => (
+                    <li class="flex items-center gap-3 text-sm text-text-muted">
+                      <svg
+                        class="w-5 h-5 text-green-500 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="/contact"
+                  class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
+                >
+                  Learn more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </a>
+              </div>
+              <div class:list={['relative', idx % 2 === 1 && 'lg:order-1']}>
+                <div class="rounded-2xl bg-surface-alt border border-border p-8 relative overflow-hidden">
+                  <div
+                    class:list={[
+                      'absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-20 bg-gradient-to-br',
+                      uc.gradient,
+                    ]}
+                  />
+                  <div class="relative z-10 text-center py-8">
+                    <div
+                      class:list={[
+                        'text-6xl sm:text-7xl font-black bg-gradient-to-r bg-clip-text text-transparent',
+                        uc.gradient,
+                      ]}
+                    >
+                      {uc.metric}
+                    </div>
+                    <p class="mt-2 text-text-muted font-medium">{uc.metricLabel}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-24 gradient-mesh">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold mb-4">Don't see your industry?</h2>
+      <p class="text-text-muted text-lg mb-8 max-w-2xl mx-auto">
+        CallBotAI is fully customizable for any business need. Talk to our team and we'll build a solution tailored to
+        your use case.
+      </p>
+      <a
+        href="/contact"
+        class="inline-block px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary to-secondary rounded-full hover:shadow-xl hover:shadow-primary/25 transition-all hover:-translate-y-1"
+      >
+        Request Custom Solution
+      </a>
+    </div>
+  </section>
+</Layout>

@@ -19,17 +19,23 @@ Twilio based phone call system with **AI-powered natural voices** - make outboun
 ## Project Structure
 
 ```
-├── server/          # Node.js + TypeScript backend
+├── server/              # Node.js + TypeScript backend
 │   └── src/
-│       ├── calls/   # Call feature (controllers, services, routes, validators, models)
-│       └── config/  # Environment config & interfaces
-├── ui/              # React + TypeScript + MUI frontend
+│       ├── calls/       # Call feature (controllers, services, routes, validators, models)
+│       └── config/      # Environment config & interfaces
+├── ui/                  # React + TypeScript + MUI frontend
 │   └── src/
 │       ├── api/         # Axios client
 │       ├── components/  # Shared components (Header, Footer, Breadcrumb)
 │       ├── theme/       # MUI theme config
 │       └── tools/
 │           └── calls/   # Call feature UI (form, logs table, components)
+├── saas-website/        # Astro + Tailwind CSS marketing website (port 9006)
+│   └── src/
+│       ├── components/  # Navbar, Footer
+│       ├── layouts/     # Shared Layout
+│       ├── pages/       # All pages (home, about, use-cases, pricing, contact, legal)
+│       └── styles/      # Global CSS + Tailwind theme
 ```
 
 ## Environment Variables
@@ -62,7 +68,27 @@ npm install
 npm run dev
 ```
 
-Server runs on `http://localhost:5000`, UI runs on `http://localhost:3000`.
+### SaaS Website
+```bash
+cd saas-website
+npm install
+npm run dev
+```
+
+Server runs on `http://localhost:5000`, UI runs on `http://localhost:3000`, SaaS website runs on `http://localhost:9006`.
+
+### Docker Compose (All Services)
+```bash
+docker compose up -d
+```
+
+| Service | Port |
+|---|---|
+| MongoDB | 27017 |
+| Server (API) | 9004 |
+| WebSocket | 9005 |
+| UI | 9003 |
+| SaaS Website | 9006 |
 
 ## API Endpoints
 

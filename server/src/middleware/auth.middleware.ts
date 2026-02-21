@@ -22,3 +22,18 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
+
+/**
+ * Optional auth — extracts userId from JWT if present but never blocks.
+ * Useful for public-facing endpoints that optionally track the caller.
+ */
+export const softAuthMiddleware = (req: AuthRequest, _res: Response, next: NextFunction): void => {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    try {
+      const decoded = jwt.verify(authHeader.split(' ')[1], envConfig.JWT_SECRET) as { userId: string };
+      req.userId = decoded.userId;
+    } catch { /* ignore invalid tokens */ }
+  }
+  next();
+};

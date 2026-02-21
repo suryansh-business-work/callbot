@@ -4,10 +4,8 @@ services:
   # ─── MongoDB ──────────────────────────────────────────────────────
   mongo:
     image: mongo:7
-    container_name: exyconn-mongo
+    container_name: voxeia-mongo
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -15,47 +13,61 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - voxeia-net
 
   # ─── Server (API + WebSocket) ────────────────────────────────────
   server:
     build: ./server
-    container_name: exyconn-server
+    container_name: voxeia-server
     restart: unless-stopped
     ports:
-      - "9004:9004"
-      - "9005:9005"
+      - "127.0.0.1:9004:9004"
+      - "127.0.0.1:9005:9005"
     env_file:
       - ./server/.env
     environment:
       - PORT=9004
       - WS_PORT=9005
-      - CLIENT_URL=http://localhost:9003
-      - MONGODB_URI=mongodb://mongo:27017/exyconn
+      - NODE_ENV=production
+      - CLIENT_URL=https://app.voxeia.com
+      - BASE_URL=https://api.voxeia.com
+      - MONGODB_URI=mongodb://mongo:27017/voxeia
     depends_on:
       mongo:
         condition: service_healthy
+    networks:
+      - voxeia-net
 
   # ─── UI (Nginx) ──────────────────────────────────────────────────
   ui:
     build:
       context: ./ui
       args:
-        VITE_WS_URL: http://localhost:9005
-    container_name: exyconn-ui
+        VITE_WS_URL: https://ws.voxeia.com
+    container_name: voxeia-ui
     restart: unless-stopped
     ports:
-      - "9003:80"
+      - "127.0.0.1:9003:80"
     depends_on:
       - server
+    networks:
+      - voxeia-net
 
   # ─── SaaS Website (Nginx) ───────────────────────────────────────
   saas-website:
     build: ./saas-website
-    container_name: exyconn-saas-website
+    container_name: voxeia-saas-website
     restart: unless-stopped
     ports:
-      - "9006:80"
+      - "127.0.0.1:9006:80"
+    networks:
+      - voxeia-net
 
 volumes:
   mongo_data:
     driver: local
+
+networks:
+  voxeia-net:
+    driver: bridge

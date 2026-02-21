@@ -1,0 +1,66 @@
+#!/bin/sh
+
+echo "🔍 Running pre-commit checks..."
+
+# ── Server type check ─────────────────────────────────────────
+echo "📦 Server — Type check..."
+cd server && npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ Server type check failed. Aborting commit."
+  exit 1
+fi
+cd ..
+
+# ── UI type check ─────────────────────────────────────────────
+echo "📦 UI — Type check..."
+cd ui && npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ UI type check failed. Aborting commit."
+  exit 1
+fi
+cd ..
+
+# ── SaaS Website type check + lint ────────────────────────────
+echo "📦 SaaS Website — Type check..."
+cd saas-website && npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ SaaS Website type check failed. Aborting commit."
+  exit 1
+fi
+
+echo "📦 SaaS Website — Lint check..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ SaaS Website lint check failed. Run 'npm run format' to fix."
+  exit 1
+fi
+cd ..
+
+# ── Server build check ────────────────────────────────────────
+echo "📦 Server — Build check..."
+cd server && npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Server build failed. Aborting commit."
+  exit 1
+fi
+cd ..
+
+# ── UI build check ────────────────────────────────────────────
+echo "📦 UI — Build check..."
+cd ui && npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ UI build failed. Aborting commit."
+  exit 1
+fi
+cd ..
+
+# ── SaaS Website build check ─────────────────────────────────
+echo "📦 SaaS Website — Build check..."
+cd saas-website && npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ SaaS Website build failed. Aborting commit."
+  exit 1
+fi
+cd ..
+
+echo "✅ All checks passed! Committing..."

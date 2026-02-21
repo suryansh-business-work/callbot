@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Build Server ──────────────────────────────────────────────
+  build-server:
+    name: Build Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+
+  # ─── Build UI ──────────────────────────────────────────────────
+  build-ui:
+    name: Build UI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+
+  # ─── Build SaaS Website ───────────────────────────────────────
+  build-saas-website:
+    name: Build SaaS Website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: saas-website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: saas-website/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
